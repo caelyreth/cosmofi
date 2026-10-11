@@ -1,0 +1,9 @@
+# rt
+node_modules
+
+# dev
+/.svelte-kit
+/build
+
+# os
+.DS_Store
