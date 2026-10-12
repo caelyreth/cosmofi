@@ -8,7 +8,14 @@
 
 <header>
   <a class="brand" href="/" aria-label="Cosmofi home">
-    <img src={favicon} width="32" height="32" alt={home ? 'Cosmofi' : ''} />
+    <img
+      src={favicon}
+      width="32"
+      height="32"
+      alt=""
+      aria-hidden="true"
+      draggable="false"
+    />
     {#if !home}
       <span class="wordmark">cosmofi</span>
     {/if}
@@ -44,11 +51,8 @@
   .wordmark {
     display: block;
     width: fit-content;
-    font:
-      600 28px/0.88 'Bricolage',
-      sans-serif;
+    font: 600 var(--text-title)/0.88 var(--font-brand);
     font-optical-sizing: none;
     view-transition-name: cosmofi-wordmark;
   }
-
 </style>

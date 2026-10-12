@@ -29,7 +29,7 @@
 <div class="signal-field">
   <canvas
     {@attach attachRenderer}
-    aria-label="Layered synthesized waveforms and flowing code tokens, colored by the selected family"
+    aria-hidden="true"
   ></canvas>
   {#if failed}
     <p>
@@ -52,7 +52,7 @@
     position: absolute;
     left: 55%;
     top: 50%;
-    font-size: 12px;
+    font-size: var(--text-small);
     color: var(--secondary);
   }
 </style>

@@ -71,23 +71,19 @@
   />
 </svelte:head>
 
-<main id="main" class="hero screen">
+<main id="main" class="hero screen" tabindex="-1">
   <div class="hero-stage">
-    <div class="hero-image">
+    <div class="hero-image" aria-hidden="true" data-nosnippet>
       <SignalField
         family={presentation.family}
         paused={presentation.paused}
       />
     </div>
-    <div class="stage-grid" aria-hidden="true"></div>
+    <div class="stage-grid" aria-hidden="true" data-nosnippet></div>
     <div class="hero-title frame">
       <div class="wordmark-line">
         <h1 class="hero-wordmark" id="cosmofi-title">cosmofi</h1>
         <span class="title-period" aria-hidden="true"></span>
-      </div>
-      <div class="hero-meta">
-        <p>Cosmic color. Lo-fi feeling.</p>
-        <span class="instrument-label">Starfield / sRGB</span>
       </div>
     </div>
     <div class="hero-copy frame">
@@ -124,7 +120,7 @@
     <div class="receiver-head">
       <div class="receiver-name">
         <span class="instrument-label">Tune the atmosphere</span>
-        <strong>
+        <strong aria-hidden="true" data-nosnippet>
           <span class="receiver-family-name">
             <DirectionalText
               value={presentation.family.name}
@@ -177,7 +173,7 @@
       </button>
     </div>
     <FamilySelector label="Transmission presets" />
-    <div class="receiver-foot instrument-label">
+    <div class="receiver-foot instrument-label" aria-hidden="true" data-nosnippet>
       <span>Eight families. One atmosphere.</span>
       <span>Cosmofi / Starfield</span>
     </div>
@@ -257,31 +253,13 @@
     transition: background 300ms;
   }
 
-  .hero-meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
-    max-width: 790px;
-    margin-top: 20px;
-    color: var(--secondary);
-  }
-
-  .hero-meta p {
-    font-size: 12px;
-  }
-
-  .hero-meta > span {
-    font-size: 8px;
-  }
-
   .hero-copy {
     align-self: end;
     padding-block: 20px 24px;
   }
 
   .hero-copy h2 {
-    font-size: 40px;
+    font-size: var(--text-heading);
     line-height: 1.05;
   }
 
@@ -293,7 +271,7 @@
 
   .hero-copy p {
     margin-top: 12px;
-    font-size: 12px;
+    font-size: var(--text-body);
     line-height: 1.8;
     color: var(--secondary);
   }
@@ -309,7 +287,7 @@
     align-items: center;
     gap: 14px;
     min-height: 44px;
-    font-size: 12px;
+    font-size: var(--text-body);
     text-decoration: none;
   }
 
@@ -331,7 +309,7 @@
   }
 
   .receiver-name > span {
-    font-size: 7px;
+    font-size: var(--text-small);
     color: var(--secondary);
   }
 
@@ -346,9 +324,7 @@
     gap: 16px;
     margin-top: 4px;
     color: var(--channel);
-    font:
-      500 25px/1.1 'Bricolage',
-      sans-serif;
+    font: 500 var(--text-title)/1.1 var(--font-brand);
     transition: color 400ms;
   }
 
@@ -358,7 +334,7 @@
   }
 
   .receiver-name .mono {
-    font-size: 12px;
+    font-size: var(--text-small);
     font-weight: 400;
   }
 
@@ -457,7 +433,7 @@
     border: 0;
     background: none;
     color: var(--secondary);
-    font-size: 12px;
+    font-size: var(--text-small);
     transition: color 300ms;
   }
 
@@ -475,7 +451,7 @@
     gap: 20px;
     margin-top: 8px;
     color: var(--secondary);
-    font-size: 7px;
+    font-size: var(--text-small);
   }
 
   @media (max-width: 900px) {
@@ -505,21 +481,13 @@
     }
 
     .hero-copy h2 {
-      font-size: 28px;
+      font-size: var(--text-title);
     }
 
     .hero-copy p {
       margin-top: 8px;
-      font-size: 11px;
+      font-size: var(--text-small);
       line-height: 1.6;
-    }
-
-    .hero-meta {
-      margin-top: 12px;
-    }
-
-    .hero-meta > span {
-      display: none;
     }
 
     .hero-destinations {
@@ -543,14 +511,14 @@
 
     .hero-destinations {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
     }
 
     .hero-destinations a {
       justify-content: space-between;
       gap: 4px;
-      font-size: 11px;
+      font-size: var(--text-small);
     }
 
     .hero-destinations :global(svg) {
@@ -560,7 +528,6 @@
 
   @media (max-height: 500px) {
     .hero-copy p,
-    .hero-meta,
     .tuning-scale,
     .receiver-foot {
       display: none;
@@ -603,7 +570,6 @@
 
   @media (max-width: 900px) and (max-height: 600px) {
     .hero-copy p,
-    .hero-meta,
     .receiver-foot {
       display: none;
     }

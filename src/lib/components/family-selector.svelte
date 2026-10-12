@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { rovingFocus } from '#lib/attachments/roving-focus'
   import { getPresentation } from '#lib/presentation.svelte'
   import { families } from '#lib/theme'
 
@@ -6,12 +7,14 @@
   const presentation = getPresentation()
 </script>
 
-<div class="family-selector" role="group" aria-label={label}>
+<div class="family-selector" role="group" aria-label={label} {@attach rovingFocus}>
   {#each families as family}
     <button
+      type="button"
       aria-label={`Tune ${family.name}`}
       title={`Tune ${family.name}`}
       aria-pressed={presentation.family.id === family.id}
+      tabindex={presentation.family.id === family.id ? 0 : -1}
       style:--swatch={family.foreground}
       onclick={() => presentation.select(family.id)}
     >
@@ -39,7 +42,8 @@
     border-bottom: 1px solid var(--static-muted);
     background: none;
     color: var(--secondary);
-    font-size: 12px;
+    font-family: var(--font-brand);
+    font-size: var(--text-small);
     transition:
       color 180ms,
       border-color 180ms;
@@ -75,7 +79,6 @@
   @media (max-width: 600px) {
     button {
       gap: 6px;
-      font-size: 11px;
     }
   }
 </style>

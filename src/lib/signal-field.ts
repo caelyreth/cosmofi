@@ -257,7 +257,7 @@ export function createSignalField(
   }
 
   function drawWords(c: string) {
-    ctx.font = '11px "Martian Mono", monospace'
+    ctx.font = '12px "Martian Mono", monospace'
     ctx.textBaseline = 'middle'
     updateHighlights()
     for (let row = 0; row < 4; row += 1) {
@@ -278,7 +278,7 @@ export function createSignalField(
   }
 
   function measureWords() {
-    ctx.font = '11px "Martian Mono", monospace'
+    ctx.font = '12px "Martian Mono", monospace'
     columns = width < 900 ? 1 : 2
     fragmentTokenWidths = fragments.map((fragment) =>
       fragment.map((token) => ctx.measureText(token.text).width),
@@ -312,7 +312,7 @@ export function createSignalField(
       )
     }
     ctx.fillStyle = `rgba(${c},.5)`
-    ctx.font = '8px "Martian Mono", monospace'
+    ctx.font = '12px "Manrope", sans-serif'
     ctx.fillText(
       `${family.name.toUpperCase()} / SYNTHESIZED CARRIER`,
       start,

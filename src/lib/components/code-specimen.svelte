@@ -1,4 +1,8 @@
 <script lang="ts">
+  import type { Attachment } from 'svelte/attachments'
+
+  import { overflowFocus } from '#lib/attachments/overflow-focus'
+  import { rovingFocus } from '#lib/attachments/roving-focus'
   import type { CodeExample, LanguageId } from '#lib/syntax'
 
   let {
@@ -13,16 +17,31 @@
     examples.find((example) => example.id === language) ?? examples[0],
   )
 
+  const attachCodeAccessibility: Attachment<HTMLDivElement> = (element) => {
+    const gutter = element.querySelector('.shj-multiline > div > div:first-child')
+
+    gutter?.setAttribute('aria-hidden', 'true')
+    gutter?.setAttribute('data-nosnippet', '')
+  }
 </script>
 
 <div class="code-specimen">
   <div class="source-heading">
-    <div class="source-tabs" role="group" aria-label="Example language">
+    <div
+      class="source-tabs"
+      role="tablist"
+      aria-label="Example language"
+      {@attach rovingFocus}
+    >
       {#each examples as example (example.id)}
         <button
           type="button"
-          aria-pressed={language === example.id}
-          aria-label={`Show ${example.name} example`}
+          id={`source-tab-${example.id}`}
+          role="tab"
+          aria-selected={selected.id === example.id}
+          aria-controls="code-example-panel"
+          aria-label={`${example.label}: ${example.name}`}
+          tabindex={selected.id === example.id ? 0 : -1}
           onclick={() => (language = example.id)}
         >
           {example.label}
@@ -32,17 +51,21 @@
     <span class="source-file mono">{selected.file}</span>
   </div>
 
-  <!-- svelte-ignore a11y_no_noninteractive_tabindex (The example accepts horizontal keyboard scrolling.) -->
-  <div
-    class="code-scroll"
-    tabindex="0"
-    role="region"
-    aria-label={`${selected.name} code example`}
-  >
-    {@html selected.html}
-  </div>
+  {#key selected.id}
+    <div
+      id="code-example-panel"
+      class="code-scroll"
+      tabindex="-1"
+      role="tabpanel"
+      aria-labelledby={`source-tab-${selected.id}`}
+      {@attach overflowFocus}
+      {@attach attachCodeAccessibility}
+    >
+      {@html selected.html}
+    </div>
+  {/key}
 
-  <div class="source-foot instrument-label">
+  <div class="source-foot instrument-label" aria-hidden="true" data-nosnippet>
     <span>{selected.name}</span>
     <span>Cosmofi syntax</span>
   </div>
@@ -75,7 +98,7 @@
   .source-tabs button {
     position: relative;
     min-height: 44px;
-    font-size: 12px;
+    font-size: var(--text-small);
     color: var(--secondary);
     transition: color 180ms;
   }
@@ -93,11 +116,11 @@
     transition: transform 220ms ease-out;
   }
 
-  .source-tabs button[aria-pressed='true'] {
+  .source-tabs button[aria-selected='true'] {
     color: var(--ink);
   }
 
-  .source-tabs button[aria-pressed='true']::after {
+  .source-tabs button[aria-selected='true']::after {
     transform: scaleX(1);
   }
 
@@ -106,7 +129,7 @@
   }
 
   .source-file {
-    font-size: 9px;
+    font-size: var(--text-small);
     color: var(--secondary);
   }
 
@@ -119,16 +142,14 @@
 
   /* Adjust Rangi's inline layout defaults; the theme owns all syntax colors. */
   .code-scroll :global(.shj-multiline) {
-    --code-size: 12px;
+    --code-size: var(--text-small);
     --code-line-height: calc(var(--code-size) * 1.9);
     min-height: 20lh;
     margin: 0 !important;
     padding: 0 !important;
     border-radius: 0 !important;
     box-shadow: none !important;
-    font:
-      var(--code-size) / var(--code-line-height) 'Martian Mono',
-      monospace !important;
+    font: var(--code-size) / var(--code-line-height) var(--font-code) !important;
   }
 
   .code-scroll :global(.shj-multiline > div) {
@@ -140,11 +161,11 @@
   .code-scroll :global(.shj-multiline > div > div:first-child) {
     position: sticky;
     left: 0;
-    width: 34px;
+    width: 40px;
     flex-shrink: 0;
     align-self: stretch;
     background: var(--panel);
-    font-size: 9px;
+    font-size: var(--text-small);
     line-height: inherit;
     opacity: 1 !important;
   }
@@ -157,7 +178,7 @@
     padding-top: 16px;
     border-top: 1px solid #333333;
     color: var(--secondary);
-    font-size: 8px;
+    font-size: var(--text-small);
   }
 
   @media (max-width: 700px) {
@@ -165,13 +186,5 @@
       gap: 18px;
     }
 
-    .code-scroll :global(.shj-multiline) {
-      --code-size: 11px;
-    }
-
-    .code-scroll :global(.shj-multiline > div > div:first-child) {
-      width: 28px;
-      font-size: 8px;
-    }
   }
 </style>

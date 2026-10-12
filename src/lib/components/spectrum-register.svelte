@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { overflowFocus } from '#lib/attachments/overflow-focus'
+  import { rovingFocus } from '#lib/attachments/roving-focus'
   import { colorFormats, readableInk } from '#lib/color'
   import { families, roles, type Family } from '#lib/theme'
 
@@ -21,14 +23,17 @@
     class="spectrum-bands"
     role="group"
     aria-label="Explore color families"
+    {@attach rovingFocus}
   >
     {#each families as item}
       <button
+        type="button"
         class="band"
         class:selected={item.id === family.id}
         style:--field={item.foreground}
         style:--band-ink={readableInk(item.foreground)}
         aria-pressed={item.id === family.id}
+        tabindex={item.id === family.id ? 0 : -1}
         aria-label={`Select ${item.name}`}
         onclick={() => onselect(item.id)}
       >
@@ -50,6 +55,8 @@
             fill="none"
             stroke="currentColor"
             stroke-width="1.5"
+            aria-hidden="true"
+            focusable="false"
           >
             <path d="M5 19 19 5M5 5h14v14" />
           </svg>
@@ -69,7 +76,13 @@
       </div>
       <span class="instrument-label">Four swatches / sRGB</span>
     </div>
-    <div class="swatch-register">
+    <div
+      class="swatch-register"
+      role="region"
+      aria-label={`${family.name} swatches and color values`}
+      tabindex="-1"
+      {@attach overflowFocus}
+    >
       <div class="specimen-swatches">
         <div class="format-labels" aria-hidden="true">
           {#each colorFormats as format, index (format.id)}
@@ -137,9 +150,7 @@
     white-space: nowrap;
     transform: rotate(90deg);
     transform-origin: left top;
-    font:
-      500 32px/1 'Bricolage',
-      sans-serif;
+    font: 500 var(--text-title)/1 var(--font-brand);
     letter-spacing: 0;
   }
   .band.selected .band-name {
@@ -156,7 +167,7 @@
     top: 106px;
     left: 14px;
     right: 22px;
-    font-size: 12px;
+    font-size: var(--text-small);
     line-height: 1.7;
   }
   .band.selected .band-description {
@@ -168,7 +179,7 @@
     position: absolute;
     bottom: 62px;
     left: 14px;
-    font-size: 12px;
+    font-size: var(--text-small);
     white-space: nowrap;
   }
   .shade-stack {
@@ -203,13 +214,14 @@
   }
   h3 {
     color: var(--family);
-    font-size: 36px;
+    font-family: var(--font-brand);
+    font-size: var(--text-heading);
     letter-spacing: 0;
     transition: color 400ms;
   }
   .specimen-description p {
     color: var(--secondary);
-    font-size: 12px;
+    font-size: var(--text-small);
     margin-top: 9px;
   }
   .specimen-description {
@@ -221,7 +233,7 @@
 
   .specimen-description > .instrument-label {
     color: var(--secondary);
-    font-size: 8px;
+    font-size: var(--text-small);
   }
   .swatch-register {
     min-width: 0;
@@ -231,7 +243,7 @@
 
   .specimen-swatches {
     display: grid;
-    grid-template-columns: 38px repeat(4, minmax(0, 1fr));
+    grid-template-columns: 48px repeat(4, minmax(0, 1fr));
     grid-template-rows: 44px auto repeat(4, minmax(44px, auto));
     column-gap: 17px;
   }
@@ -264,7 +276,7 @@
     display: block;
     margin-block: 13px 8px;
     color: var(--secondary);
-    font-size: 10px;
+    font-size: var(--text-small);
   }
 
   .format-row {
@@ -281,7 +293,7 @@
 
   .format-label {
     color: var(--secondary);
-    font-size: 10px;
+    font-size: var(--text-small);
   }
   @media (max-width: 1000px) {
     .spectrum-bands {
@@ -299,11 +311,8 @@
     }
     .band.selected .band-name {
       left: 10px;
-      font-size: 28px;
+      font-size: var(--text-title);
       transform: rotate(0deg);
-    }
-    .band-code {
-      font-size: 12px;
     }
     .band.selected .band-corner {
       display: none;
@@ -338,10 +347,10 @@
       padding-block: 18px;
     }
     h3 {
-      font-size: 28px;
+      font-size: var(--text-title);
     }
     .specimen-swatches {
-      min-width: 660px;
+      min-width: 760px;
       column-gap: 16px;
     }
     .format-labels {
@@ -350,18 +359,13 @@
       z-index: 2;
       background: var(--page);
     }
-    .format-label {
-      font-size: 9px;
-    }
     .specimen-color > .instrument-label {
-      font-size: 9px;
       overflow-wrap: anywhere;
       margin-top: 8px;
     }
 
     .specimen-description p {
       margin-top: 5px;
-      font-size: 11px;
     }
 
   }

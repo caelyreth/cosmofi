@@ -90,7 +90,7 @@
   }
 
   .copy-value {
-    font-size: 11px;
+    font-size: var(--text-small);
     line-height: 1.65;
     overflow-wrap: anywhere;
     user-select: text;
@@ -136,10 +136,6 @@
   @media (max-width: 600px) {
     button {
       gap: 4px;
-    }
-
-    .copy-value {
-      font-size: 10px;
     }
   }
 </style>

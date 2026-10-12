@@ -24,6 +24,14 @@
 }
 html {
   --page-inset: 40px;
+  --font-body: 'Manrope', sans-serif;
+  --font-brand: 'Bricolage', sans-serif;
+  --font-code: 'Martian Mono', monospace;
+  --text-small: 12px;
+  --text-body: 14px;
+  --text-title: 24px;
+  --text-heading: 40px;
+  --text-display: 56px;
   height: 100%;
   overflow: hidden;
   background: #161616;
@@ -33,7 +41,8 @@ body {
   height: 100%;
   overflow: hidden;
   margin: 0;
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--font-body);
+  font-size: var(--text-body);
   -webkit-font-smoothing: antialiased;
 }
 button,
@@ -59,6 +68,26 @@ button {
   cursor: pointer;
 }
 
+button,
+[role='tab'],
+.brand,
+.hero-wordmark,
+.instrument-label {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+[aria-hidden='true'] {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+pre,
+code,
+.copy-value {
+  user-select: text;
+}
+
 button::-moz-focus-inner {
   padding: 0;
   border: 0;
@@ -75,7 +104,8 @@ button:disabled {
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
-select:focus-visible {
+select:focus-visible,
+[tabindex='0']:focus-visible {
   outline: 2px solid var(--halo-foreground, #a19ec2);
   outline-offset: 5px;
 }
@@ -103,7 +133,7 @@ p {
 h1,
 h2,
 h3 {
-  font-family: 'Bricolage', sans-serif;
+  font-family: var(--font-body);
   font-weight: 500;
   text-wrap: balance;
 }
@@ -155,11 +185,11 @@ a svg {
   margin-inline: auto;
 }
 .mono {
-  font-family: 'Martian Mono', monospace;
+  font-family: var(--font-code);
 }
 .instrument-label {
-  font-family: 'Martian Mono', monospace;
-  font-size: 9px;
+  font-family: var(--font-body);
+  font-size: var(--text-small);
   line-height: 1.7;
   letter-spacing: 0;
   text-transform: uppercase;
@@ -176,6 +206,7 @@ a svg {
   border: 0;
 }
 .hero-wordmark {
+  font-family: var(--font-brand);
   font-optical-sizing: none;
 }
 :root::view-transition-old(root),

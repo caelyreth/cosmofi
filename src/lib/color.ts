@@ -28,6 +28,10 @@ useMode(modeLrgb)
 const cache = new Map<string, ColorValues>()
 const inkCache = new Map<string, string>()
 
+export function colorHue(hex: string) {
+  return toOklch(hex)?.h ?? 0
+}
+
 function round(value: number, places: number) {
   const precision = 10 ** places
   return Math.round(value * precision) / precision

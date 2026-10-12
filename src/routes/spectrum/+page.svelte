@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { overflowFocus } from '#lib/attachments/overflow-focus'
   import SpectrumRegister from '#lib/components/spectrum-register.svelte'
   import { getPresentation } from '#lib/presentation.svelte'
 
@@ -13,13 +14,13 @@
   />
 </svelte:head>
 
-<main id="main" class="spectrum-page screen">
-  <!-- svelte-ignore a11y_no_noninteractive_tabindex (The spectrum accepts keyboard scrolling on compact screens.) -->
+<main id="main" class="spectrum-page screen" tabindex="-1">
   <div
     class="spectrum-content scroll-pane"
-    tabindex="0"
+    tabindex="-1"
     role="region"
     aria-labelledby="spectrum-title"
+    {@attach overflowFocus}
   >
     <div class="section-heading">
       <h1 id="spectrum-title">
@@ -67,7 +68,7 @@
   }
 
   h1 {
-    font-size: 56px;
+    font-size: var(--text-display);
     line-height: 1.02;
   }
 
@@ -78,13 +79,13 @@
   .section-heading p {
     max-width: 310px;
     color: var(--secondary);
-    font-size: 12px;
+    font-size: var(--text-body);
     line-height: 1.85;
   }
 
   @media (max-width: 800px), (max-height: 750px) {
     h1 {
-      font-size: 40px;
+      font-size: var(--text-heading);
     }
     .section-heading {
       gap: 24px;
@@ -98,10 +99,6 @@
       padding-bottom: max(16px, env(safe-area-inset-bottom));
     }
 
-    h1 {
-      font-size: 34px;
-    }
-
     .section-heading {
       flex-direction: column;
       align-items: flex-start;
@@ -111,7 +108,7 @@
 
     .section-heading p {
       max-width: 42ch;
-      font-size: 11px;
+      font-size: var(--text-small);
       line-height: 1.6;
     }
   }

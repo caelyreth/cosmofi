@@ -4,19 +4,17 @@
   "workspaces": {
     "": {
       "name": "cosmofi",
-      "dependencies": {
-        "culori": "^4.0.2",
-        "lucide-svelte": "^1.0.1",
-        "rangi": "^2.2.0",
-      },
       "devDependencies": {
         "@sveltejs/adapter-auto": "^8.0.0",
         "@sveltejs/kit": "^3.0.0",
         "@sveltejs/vite-plugin-svelte": "^7.2.0",
         "@types/culori": "^4.0.1",
+        "culori": "^4.0.2",
+        "lucide-svelte": "^1.0.1",
         "oxfmt": "^0.72.0",
         "oxlint": "^1.87.0",
         "oxlint-tsgolint": "^7.0.2004",
+        "rangi": "^2.2.0",
         "svelte": "^5.57.1",
         "svelte-check": "^4.6.0",
         "typescript": "npm:typescript-native-bridge@6.0.3-bridge.18.tsgo.7.0.2",
@@ -268,11 +266,11 @@
 
     "picocolors": ["picocolors@1.1.1", "", {}, "sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA=="],
 
-    "rangi": ["rangi@2.2.0", "", { "bin": { "rangi": "dist/cli.mjs", "rcat": "dist/cli.mjs" } }, "sha512-zMXLNs+3ejB2dg5kjJdNbllNq6FrdtEbHA9f3POxbSIHb0CyslALbY8qSDCE2r+/6Ku7xaVHKtnC5qHbF2SgNg=="],
-
     "picomatch": ["picomatch@4.0.7", "", {}, "sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA=="],
 
     "postcss": ["postcss@8.5.29", "", { "dependencies": { "nanoid": "^3.3.19", "picocolors": "^1.1.1", "source-map-js": "^1.2.2" } }, "sha512-49cGhUbXj8Qenv0iTMxA1cFBzxXoctpC9Ujd77t1WcbJIr6nF/eI7g/8MgxrYldFRuAXvja7xQRwavoW7kgrxQ=="],
+
+    "rangi": ["rangi@2.2.0", "", { "bin": { "rangi": "dist/cli.mjs", "rcat": "dist/cli.mjs" } }, "sha512-zMXLNs+3ejB2dg5kjJdNbllNq6FrdtEbHA9f3POxbSIHb0CyslALbY8qSDCE2r+/6Ku7xaVHKtnC5qHbF2SgNg=="],
 
     "readdirp": ["readdirp@4.1.2", "", {}, "sha512-GDhwkLfywWL2s6vEjyhri+eXmfH6j1L7JE27WhqLeYzoh/A3DBaYGEj2H/HFZCn/kMfim73FXxEJTw06WtxQwg=="],
 

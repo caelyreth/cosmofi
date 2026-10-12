@@ -14,6 +14,7 @@
   stroke-linecap="round"
   stroke-linejoin="round"
   aria-hidden="true"
+  focusable="false"
   class:left={direction === 'left'}
   class:up={direction === 'up'}
   class:down={direction === 'down'}

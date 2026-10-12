@@ -18,6 +18,7 @@
     <span
       class="text"
       aria-hidden="true"
+      data-nosnippet
       in:fly={motion(-direction)}
       out:fly={motion(direction)}>{text}</span
     >
