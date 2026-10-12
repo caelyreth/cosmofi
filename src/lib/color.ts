@@ -1,8 +1,6 @@
 import {
   formatHex,
-  formatHsl,
   formatRgb,
-  modeHsl,
   modeLrgb,
   modeOklch,
   modeRgb,
@@ -13,7 +11,6 @@ import {
 export const colorFormats = [
   { id: 'hex', label: 'Hex' },
   { id: 'rgb', label: 'RGB' },
-  { id: 'hsl', label: 'HSL' },
   { id: 'oklch', label: 'OKLCH' },
 ] as const
 
@@ -22,7 +19,6 @@ type ColorValues = Record<ColorFormat, string>
 
 const toRgb = useMode(modeRgb)
 const toOklch = useMode(modeOklch)
-useMode(modeHsl)
 useMode(modeLrgb)
 
 const cache = new Map<string, ColorValues>()
@@ -49,7 +45,6 @@ function convert(hex: string): ColorValues {
   return {
     hex: formatHex(rgb)!.toUpperCase(),
     rgb: formatRgb(rgb)!,
-    hsl: formatHsl(rgb)!,
     oklch: `oklch(${round(oklch.l * 100, 2)}% ${round(oklch.c, 4)} ${round(oklch.h ?? 0, 2)})`,
   }
 }

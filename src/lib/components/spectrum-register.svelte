@@ -83,7 +83,11 @@
       tabindex="-1"
       {@attach overflowFocus}
     >
-      <div class="specimen-swatches">
+      <div
+        class="specimen-swatches"
+        style:--format-count={colorFormats.length}
+        style:--row-count={colorFormats.length + 2}
+      >
         <div class="format-labels" aria-hidden="true">
           {#each colorFormats as format, index (format.id)}
             <span
@@ -244,7 +248,7 @@
   .specimen-swatches {
     display: grid;
     grid-template-columns: 48px repeat(4, minmax(0, 1fr));
-    grid-template-rows: 44px auto repeat(4, minmax(44px, auto));
+    grid-template-rows: 44px auto repeat(var(--format-count), minmax(44px, auto));
     column-gap: 17px;
   }
 
@@ -252,7 +256,7 @@
   .specimen-color {
     display: grid;
     grid-template-rows: subgrid;
-    grid-row: 1 / span 6;
+    grid-row: 1 / span var(--row-count);
   }
 
   .format-labels {
