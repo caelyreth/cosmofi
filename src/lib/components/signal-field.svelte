@@ -1,8 +1,9 @@
 <script lang="ts">
+  import { untrack } from 'svelte'
   import type { Attachment } from 'svelte/attachments'
 
   import { createSignalField } from '#lib/signal-field'
-  import { families, type Family } from '#lib/theme'
+  import type { Family } from '#lib/theme'
 
   let { family, paused = false }: { family: Family; paused?: boolean } =
     $props()
@@ -12,7 +13,8 @@
     let renderer: ReturnType<typeof createSignalField>
 
     try {
-      renderer = createSignalField(canvas, families[0])
+      // Color updates belong to the nested effect, preserving this renderer's timeline.
+      renderer = untrack(() => createSignalField(canvas, family))
     } catch {
       failed = true
       return

@@ -138,6 +138,8 @@
     overflow-x: auto;
     overscroll-behavior-x: contain;
     padding-block: 24px;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 
   /* Adjust Rangi's inline layout defaults; the theme owns all syntax colors. */
@@ -149,13 +151,22 @@
     padding: 0 !important;
     border-radius: 0 !important;
     box-shadow: none !important;
-    font: var(--code-size) / var(--code-line-height) var(--font-code) !important;
+    font-family: var(--font-code) !important;
+    font-size: var(--code-size) !important;
+    font-weight: 400 !important;
+    line-height: var(--code-line-height) !important;
   }
 
   .code-scroll :global(.shj-multiline > div) {
     width: max-content;
     min-width: 100%;
     overflow: visible !important;
+  }
+
+  .code-scroll :global(.shj-multiline > div > div) {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
   }
 
   .code-scroll :global(.shj-multiline > div > div:first-child) {
@@ -185,6 +196,5 @@
     .source-tabs {
       gap: 18px;
     }
-
   }
 </style>

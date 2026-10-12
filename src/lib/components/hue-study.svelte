@@ -4,7 +4,6 @@
   import { families, familyById, type FamilyId } from '#lib/theme'
 
   let selected = $state<FamilyId>('halo')
-  let preview = $state<FamilyId>()
 
   const hueFamilies = families
     .filter((family) => family.id !== 'static' && family.id !== 'moonveil')
@@ -28,12 +27,17 @@
       end = 190
     }
 
-    return { ...family, start: start + 1, length: end - start - 2 }
+    return {
+      ...family,
+      start: start + 1,
+      length: end - start - 2,
+      hitArea: sector(start, end),
+    }
   })
 
-  const family = $derived(familyById[preview ?? selected])
-  const hue = $derived(hueFamilies.find((item) => item.id === family.id)?.hue)
-  const marker = $derived(hue === undefined ? undefined : point(hue, 125))
+  const family = $derived(familyById[selected])
+  const hue = $derived(colorHue(family.foreground))
+  const marker = $derived(point(hue, 125))
 
   function point(angle: number, radius: number) {
     const radians = (angle - 90) * Math.PI / 180
@@ -42,6 +46,23 @@
       x: 170 + Math.cos(radians) * radius,
       y: 170 + Math.sin(radians) * radius,
     }
+  }
+
+  function sector(start: number, end: number) {
+    const steps = Math.ceil((end - start) / 6)
+    const angles = Array.from(
+      { length: steps + 1 },
+      (_, index) => start + (end - start) * index / steps,
+    )
+    const points = [
+      ...angles.map((angle) => point(angle, 151)),
+      ...angles.toReversed().map((angle) => point(angle, 99)),
+    ]
+    const coordinates = points.map(
+      ({ x, y }) => `${x / 340 * 100}% ${y / 340 * 100}%`,
+    )
+
+    return `polygon(${coordinates.join(', ')})`
   }
 
   const omittedStart = point(190, 125)
@@ -55,12 +76,40 @@
     <span>Hue / OKLCH</span>
   </figcaption>
 
-  <div class="hue-layout">
-    <div class="hue-wheel" aria-hidden="true" data-nosnippet>
-      <svg viewBox="0 0 340 340" fill="none" focusable="false">
-        <circle class="inner-guide" cx="170" cy="170" r="94" />
-        {#each segments as segment (segment.id)}
+  <div
+    class="hue-wheel"
+    role="group"
+    aria-label="Color hue circle. The dashed arc marks omitted cyan and blue."
+    {@attach rovingFocus}
+  >
+    {#each segments as segment (segment.id)}
+      <button
+        type="button"
+        aria-label={`${segment.name}, ${Math.round(segment.hue)} degrees, ${segment.foreground}`}
+        aria-pressed={selected === segment.id}
+        tabindex={selected === segment.id ? 0 : -1}
+        style:clip-path={segment.hitArea}
+        onclick={() => (selected = segment.id)}
+      >
+        <svg
+          viewBox="0 0 340 340"
+          fill="none"
+          aria-hidden="true"
+          focusable="false"
+        >
           <circle
+            class="focus-ring"
+            cx="170"
+            cy="170"
+            r="125"
+            pathLength="360"
+            stroke-width="28"
+            stroke-dasharray={`${segment.length} ${360 - segment.length}`}
+            stroke-dashoffset={-segment.start}
+            transform="rotate(-90 170 170)"
+          />
+          <circle
+            class="hue-segment"
             cx="170"
             cy="170"
             r="125"
@@ -70,53 +119,33 @@
             stroke-dasharray={`${segment.length} ${360 - segment.length}`}
             stroke-dashoffset={-segment.start}
             transform="rotate(-90 170 170)"
-            class:dimmed={hue !== undefined && family.id !== segment.id}
           />
-        {/each}
-        <path class="omitted-arc" d={omittedArc} />
-        {#if marker}
-          <circle
-            class="hue-marker"
-            cx={marker.x}
-            cy={marker.y}
-            r="7"
-            fill={family.foreground}
-          />
-        {/if}
-      </svg>
-      <div class="wheel-center">
-        <span class="instrument-label">
-          {hue === undefined ? 'Neutral' : `${Math.round(hue)} deg`}
-        </span>
-        <strong style:color={family.foreground}>{family.name}</strong>
-        <span class="mono">{family.foreground}</span>
-      </div>
-    </div>
+        </svg>
+      </button>
+    {/each}
 
-    <div
-      class="hue-choices"
-      role="group"
-      aria-label="Color families in the hue study"
-      {@attach rovingFocus}
+    <svg
+      class="wheel-guides"
+      viewBox="0 0 340 340"
+      fill="none"
+      aria-hidden="true"
+      focusable="false"
     >
-      {#each families as item (item.id)}
-        <button
-          type="button"
-          aria-pressed={selected === item.id}
-          tabindex={selected === item.id ? 0 : -1}
-          style:--swatch={item.foreground}
-          onclick={() => (selected = item.id)}
-          onpointerenter={() => (preview = item.id)}
-          onpointerleave={() => (preview = undefined)}
-          onfocus={() => (preview = undefined)}
-        >
-          <i aria-hidden="true"></i>
-          <span class="color-labels">
-            <span class="family-name">{item.name}</span>
-            <span class="family-hex mono">{item.foreground}</span>
-          </span>
-        </button>
-      {/each}
+      <circle class="inner-guide" cx="170" cy="170" r="94" />
+      <path class="omitted-arc" d={omittedArc} />
+      <circle
+        class="hue-marker"
+        cx={marker.x}
+        cy={marker.y}
+        r="7"
+        fill={family.foreground}
+      />
+    </svg>
+
+    <div class="wheel-center" aria-hidden="true" data-nosnippet>
+      <span class="instrument-label">{Math.round(hue)} deg</span>
+      <strong style:color={family.foreground}>{family.name}</strong>
+      <span class="mono">{family.foreground}</span>
     </div>
   </div>
 
@@ -125,7 +154,6 @@
       <i aria-hidden="true"></i>
       <span>Cyan / Blue omitted</span>
     </span>
-    <span>Six accents / Two neutrals</span>
   </div>
 </figure>
 
@@ -148,17 +176,13 @@
     font-size: var(--text-small);
   }
 
-  .hue-layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
-    align-items: center;
-    gap: 24px;
-  }
-
   .hue-wheel {
     position: relative;
-    width: 100%;
-    max-width: 360px;
+    width: min(
+      100%,
+      580px,
+      max(300px, calc(100svh - var(--content-top) - var(--content-bottom) - 112px))
+    );
     aspect-ratio: 1;
     justify-self: center;
   }
@@ -169,12 +193,41 @@
     height: 100%;
   }
 
-  svg circle {
+  .hue-segment {
+    opacity: 0.5;
     transition: opacity 250ms;
   }
 
-  .dimmed {
-    opacity: 0.45;
+  button[aria-pressed='true'] .hue-segment,
+  button:hover .hue-segment,
+  button:focus-visible .hue-segment {
+    opacity: 1;
+  }
+
+  button {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  button:focus-visible {
+    outline: none;
+  }
+
+  .focus-ring {
+    stroke: var(--ink);
+    opacity: 0;
+  }
+
+  button:focus-visible .focus-ring {
+    opacity: 1;
+  }
+
+  .wheel-guides {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
   }
 
   .inner-guide {
@@ -205,6 +258,7 @@
     text-align: center;
     color: var(--secondary);
     font-size: var(--text-small);
+    pointer-events: none;
   }
 
   .wheel-center strong {
@@ -212,53 +266,6 @@
     font-size: var(--text-title);
     font-weight: 500;
     transition: color 250ms;
-  }
-
-  .hue-choices {
-    display: grid;
-  }
-
-  button {
-    display: grid;
-    grid-template-columns: 10px minmax(0, 1fr);
-    align-items: center;
-    gap: 12px;
-    min-height: 44px;
-    padding: 4px 8px;
-    border-left: 1px solid transparent;
-    color: var(--secondary);
-    transition: border-color 200ms, color 200ms;
-  }
-
-  button[aria-pressed='true'] {
-    border-color: var(--swatch);
-    color: var(--ink);
-  }
-
-  button:hover {
-    color: var(--swatch);
-  }
-
-  button i {
-    width: 8px;
-    height: 8px;
-    background: var(--swatch);
-  }
-
-  .color-labels {
-    display: grid;
-    gap: 2px;
-    min-width: 0;
-  }
-
-  .family-name {
-    font-family: var(--font-brand);
-    font-size: var(--text-body);
-  }
-
-  .family-hex {
-    color: var(--secondary);
-    font-size: var(--text-small);
   }
 
   .hue-foot {
@@ -278,18 +285,8 @@
   }
 
   @media (max-width: 700px) {
-    .hue-layout {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 20px;
-    }
-
     .hue-wheel {
-      max-width: 300px;
-    }
-
-    .hue-choices {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 4px 12px;
+      width: min(100%, 420px);
     }
   }
 </style>

@@ -1,22 +1,48 @@
 import { families, type Family } from './theme'
 
+interface CanvasLayer {
+  canvas: HTMLCanvasElement
+  context: CanvasRenderingContext2D
+}
+
+interface FragmentImage {
+  base: CanvasLayer
+  accent: CanvasLayer
+  image: CanvasLayer
+  width: number
+  height: number
+}
+
+interface WaveBand {
+  baseline: number
+  opacity: number
+  ink: string
+  pulseSin: Float32Array
+  pulseCos: Float32Array
+  harmonicSin: Float32Array
+  harmonicCos: Float32Array
+}
+
 export function createSignalField(
   canvas: HTMLCanvasElement,
   initial: Family,
 ) {
   const context = canvas.getContext('2d')
+
   if (!context) {
     throw new Error('Canvas unavailable')
   }
 
   const ctx = context
+  const compact = window.matchMedia('(max-width: 600px)')
   const rgb = (hex: string) =>
     [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16))
   let target = rgb(initial.foreground)
   let color = [...target]
   let family = initial
-  let width = 1
-  let height = 1
+  let width = 0
+  let height = 0
+  let dpr = 1
   let time = 0
   let previous = 0
   let frame = 0
@@ -26,6 +52,13 @@ export function createSignalField(
   let paused = false
   let visible = true
   let destroyed = false
+  let fragmentImages: FragmentImage[] = []
+  let waveBands: WaveBand[] = []
+  let wavePositions = new Float32Array()
+  let renderedColor = ''
+  let lighting:
+    | { glare: CanvasGradient; beam: CanvasGradient; lens: CanvasGradient }
+    | undefined
 
   const keyword = families[3].foreground
   const typeInk = families[6].foreground
@@ -71,11 +104,39 @@ export function createSignalField(
   let nextHighlight = 0.25
 
   function draw() {
+    if (width <= 0 || height <= 0 || fragmentImages.length === 0) {
+      return
+    }
+
     ctx.clearRect(0, 0, width, height)
-    const c = color.map(Math.round).join(',')
+    const c = `${Math.round(color[0])},${Math.round(color[1])},${Math.round(color[2])}`
     const focus = width * focusPosition
     const center = height * 0.57
-    // Interference field: every contour is a sampled superposition, never a picture outline.
+    const gradients = prepareAppearance(c, focus, center)
+
+    ctx.fillStyle = gradients.glare
+    ctx.fillRect(0, 0, width, height)
+    drawWords()
+    drawWaves()
+    drawLens(focus, center, gradients)
+
+    if (!compact.matches) {
+      drawSamples(c)
+    }
+  }
+
+  function prepareAppearance(c: string, focus: number, center: number) {
+    if (c === renderedColor && lighting) {
+      return lighting
+    }
+
+    renderedColor = c
+    tintWords(c)
+
+    for (const band of waveBands) {
+      band.ink = `rgba(${c},${band.opacity})`
+    }
+
     const glare = ctx.createRadialGradient(
       focus,
       center,
@@ -87,52 +148,13 @@ export function createSignalField(
     glare.addColorStop(0, `rgba(${c},.19)`)
     glare.addColorStop(0.2, `rgba(${c},.07)`)
     glare.addColorStop(1, `rgba(${c},0)`)
-    ctx.fillStyle = glare
-    ctx.fillRect(0, 0, width, height)
-    drawWords(c)
-    drawWaves(c, center)
-    drawLens(c, focus, center)
-    drawSamples(c)
-  }
 
-  function drawWaves(c: string, center: number) {
-    const amplitude = height * 0.23
-    ctx.lineWidth = 1
-    for (let band = 0; band < 22; band += 1) {
-      const depth = band / 21
-      ctx.beginPath()
-      for (let step = 0; step <= 150; step += 1) {
-        const x = (step / 150) * width
-        const u = x / width
-        const envelope = Math.exp(-((u - focusPosition) ** 2) / 0.064)
-        const pulse = Math.sin(u * 9 - time * 0.35 + depth * 3.8)
-        const harmonic = Math.sin(u * 18 + time * 0.18 + depth * 2.1) * 0.1
-        const y =
-          center +
-          (depth - 0.5) * height * 0.4 +
-          (pulse + harmonic) * amplitude * envelope * (0.5 + depth * 0.5)
-        if (step === 0) {
-          ctx.moveTo(x, y)
-        } else {
-          ctx.lineTo(x, y)
-        }
-      }
-      ctx.strokeStyle = `rgba(${c},${0.12 + Math.sin(depth * Math.PI) * 0.45})`
-      ctx.stroke()
-    }
-  }
-
-  function drawLens(c: string, focus: number, center: number) {
-    // A lens caustic intersects the carrier, rather than depicting a celestial object.
-    ctx.save()
-    ctx.globalCompositeOperation = 'screen'
     const beam = ctx.createLinearGradient(0, 0, width, 0)
     beam.addColorStop(0, `rgba(${c},0)`)
     beam.addColorStop(0.5, `rgba(${c},.04)`)
     beam.addColorStop(focusPosition, 'rgba(217,215,205,.65)')
     beam.addColorStop(1, `rgba(${c},0)`)
-    ctx.fillStyle = beam
-    ctx.fillRect(0, center - 0.5, width, 1)
+
     const lens = ctx.createRadialGradient(
       focus,
       center,
@@ -145,7 +167,97 @@ export function createSignalField(
     lens.addColorStop(0.03, `rgba(${c},.35)`)
     lens.addColorStop(0.12, `rgba(${c},.08)`)
     lens.addColorStop(1, `rgba(${c},0)`)
-    ctx.fillStyle = lens
+
+    lighting = { glare, beam, lens }
+
+    return lighting
+  }
+
+  function measureWaves() {
+    const steps = Math.max(64, Math.min(180, Math.ceil(width / 8)))
+    const count = compact.matches ? 16 : 22
+    const amplitude = height * 0.23
+    const center = height * 0.57
+
+    wavePositions = Float32Array.from(
+      { length: steps + 1 },
+      (_, step) => step / steps * width,
+    )
+
+    // Cache spatial terms; only the four time-dependent phases change per frame.
+    waveBands = Array.from({ length: count }, (_, index) => {
+      const depth = index / (count - 1)
+      const band: WaveBand = {
+        baseline: center + (depth - 0.5) * height * 0.4,
+        opacity: 0.12 + Math.sin(depth * Math.PI) * 0.45,
+        ink: '',
+        pulseSin: new Float32Array(steps + 1),
+        pulseCos: new Float32Array(steps + 1),
+        harmonicSin: new Float32Array(steps + 1),
+        harmonicCos: new Float32Array(steps + 1),
+      }
+
+      for (let step = 0; step <= steps; step += 1) {
+        const u = step / steps
+        const envelope = Math.exp(-((u - focusPosition) ** 2) / 0.064)
+        const strength = amplitude * envelope * (0.5 + depth * 0.5)
+        const pulse = u * 9 + depth * 3.8
+        const harmonic = u * 18 + depth * 2.1
+
+        band.pulseSin[step] = Math.sin(pulse) * strength
+        band.pulseCos[step] = Math.cos(pulse) * strength
+        band.harmonicSin[step] = Math.sin(harmonic) * strength * 0.1
+        band.harmonicCos[step] = Math.cos(harmonic) * strength * 0.1
+      }
+
+      return band
+    })
+
+    renderedColor = ''
+  }
+
+  function drawWaves() {
+    const pulseSin = Math.sin(time * 0.35)
+    const pulseCos = Math.cos(time * 0.35)
+    const harmonicSin = Math.sin(time * 0.18)
+    const harmonicCos = Math.cos(time * 0.18)
+
+    ctx.lineWidth = 1
+
+    for (const band of waveBands) {
+      ctx.beginPath()
+
+      for (let step = 0; step < wavePositions.length; step += 1) {
+        const x = wavePositions[step]
+        const y =
+          band.baseline +
+          band.pulseSin[step] * pulseCos -
+          band.pulseCos[step] * pulseSin +
+          band.harmonicSin[step] * harmonicCos +
+          band.harmonicCos[step] * harmonicSin
+
+        if (step === 0) {
+          ctx.moveTo(x, y)
+        } else {
+          ctx.lineTo(x, y)
+        }
+      }
+
+      ctx.strokeStyle = band.ink
+      ctx.stroke()
+    }
+  }
+
+  function drawLens(
+    focus: number,
+    center: number,
+    gradients: ReturnType<typeof prepareAppearance>,
+  ) {
+    ctx.save()
+    ctx.globalCompositeOperation = 'screen'
+    ctx.fillStyle = gradients.beam
+    ctx.fillRect(0, center - 0.5, width, 1)
+    ctx.fillStyle = gradients.lens
     ctx.fillRect(
       focus - height * 0.15,
       center - height * 0.15,
@@ -160,43 +272,46 @@ export function createSignalField(
     x: number,
     y: number,
     glow: number,
-    accent: string,
   ) {
-    const fragmentIndex = id % fragments.length
-    const fragment = fragments[fragmentIndex]
-    const widths = fragmentTokenWidths[fragmentIndex]
-    const opacity = 0.22 + glow * 0.72
-    let cursor = x
-    fragment.forEach((token, tokenIndex) => {
-      ctx.fillStyle = `rgba(${token.ink ?? accent},${opacity})`
-      ctx.fillText(token.text, cursor, y)
-      cursor += widths[tokenIndex]
-    })
+    const fragment = fragmentImages[id % fragmentImages.length]
+
+    ctx.globalAlpha = 0.22 + glow * 0.72
+    ctx.drawImage(
+      fragment.image.canvas,
+      x - 1,
+      y - fragment.height / 2,
+      fragment.width,
+      fragment.height,
+    )
+    ctx.globalAlpha = 1
   }
 
-  function fragmentCopies(id: number) {
+  function linePosition(id: number) {
     const row = Math.floor(id / columns)
     const col = id % columns
     const loopWidth = spacing * columns
-    const x =
+
+    return (
       (((col * spacing + row * 61 - time * (18 + row * 3)) % loopWidth) +
         loopWidth) %
       loopWidth
-
-    return [x - loopWidth, x, x + loopWidth].filter(
-      (copy) => copy > -longest && copy < width,
     )
   }
 
   function visibleLine(id: number) {
     const lineWidth = fragmentWidths[id % fragments.length]
     const minimumVisible = Math.min(lineWidth * 0.5, width * 0.4)
+    const loopWidth = spacing * columns
 
-    return fragmentCopies(id).some((x) => {
+    for (let x = linePosition(id) - loopWidth; x < width; x += loopWidth) {
       const visibleWidth = Math.min(x + lineWidth, width) - Math.max(x, 0)
 
-      return visibleWidth >= minimumVisible
-    })
+      if (visibleWidth >= minimumVisible) {
+        return true
+      }
+    }
+
+    return false
   }
 
   function chooseLine() {
@@ -210,6 +325,7 @@ export function createSignalField(
 
   function smoothstep(progress: number) {
     const t = Math.max(0, Math.min(1, progress))
+
     return t * t * (3 - 2 * t)
   }
 
@@ -256,23 +372,27 @@ export function createSignalField(
     return attack * (1 - release)
   }
 
-  function drawWords(c: string) {
-    ctx.font = '12px "Martian Mono", monospace'
-    ctx.textBaseline = 'middle'
+  function drawWords() {
     updateHighlights()
+
     for (let row = 0; row < 4; row += 1) {
-      drawRow(row, c)
+      drawRow(row)
     }
   }
 
-  function drawRow(row: number, c: string) {
+  function drawRow(row: number) {
+    const loopWidth = spacing * columns
+
     for (let col = 0; col < columns; col += 1) {
       const id = row * columns + col
       const y = height * (0.23 + row * 0.145)
       const glow = lineGlow(id)
+
       // Repeated copies share a measured pitch, so the seam cannot accumulate overlap.
-      for (const copy of fragmentCopies(id)) {
-        drawFragment(id, copy, y, glow, c)
+      for (let x = linePosition(id) - loopWidth; x < width; x += loopWidth) {
+        if (x > -longest) {
+          drawFragment(id, x, y, glow)
+        }
       }
     }
   }
@@ -288,13 +408,93 @@ export function createSignalField(
     )
     longest = Math.max(...fragmentWidths)
     spacing = Math.max(width / columns, longest + 80)
+
+    // Render glyphs once, then animate whole lines with position and opacity.
+    fragmentImages = fragments.map((fragment, index) => {
+      const imageWidth = Math.ceil(fragmentWidths[index] + 2)
+      const imageHeight = 24
+      const base = createLayer(imageWidth, imageHeight)
+      const accent = createLayer(imageWidth, imageHeight)
+      let cursor = 1
+
+      base.context.font = ctx.font
+      accent.context.font = ctx.font
+      base.context.textBaseline = 'middle'
+      accent.context.textBaseline = 'middle'
+
+      fragment.forEach((token, tokenIndex) => {
+        const layer = token.ink === null ? accent : base
+
+        layer.context.fillStyle =
+          token.ink === null ? '#fff' : `rgb(${token.ink})`
+        layer.context.fillText(token.text, cursor, imageHeight / 2)
+        cursor += fragmentTokenWidths[index][tokenIndex]
+      })
+
+      return {
+        base,
+        accent,
+        image: createLayer(imageWidth, imageHeight),
+        width: imageWidth,
+        height: imageHeight,
+      }
+    })
+
+    for (const id of highlights.keys()) {
+      if (id >= columns * 4) {
+        highlights.delete(id)
+      }
+    }
+
+    renderedColor = ''
+  }
+
+  function createLayer(layerWidth: number, layerHeight: number): CanvasLayer {
+    const layer = document.createElement('canvas')
+    const layerContext = layer.getContext('2d')
+
+    if (!layerContext) {
+      throw new Error('Canvas unavailable')
+    }
+
+    layer.width = Math.ceil(layerWidth * dpr)
+    layer.height = Math.ceil(layerHeight * dpr)
+    layerContext.setTransform(dpr, 0, 0, dpr, 0, 0)
+
+    return { canvas: layer, context: layerContext }
+  }
+
+  function tintWords(c: string) {
+    for (const fragment of fragmentImages) {
+      const image = fragment.image.context
+
+      image.clearRect(0, 0, fragment.width, fragment.height)
+      image.fillStyle = `rgb(${c})`
+      image.fillRect(0, 0, fragment.width, fragment.height)
+      image.globalCompositeOperation = 'destination-in'
+      image.drawImage(
+        fragment.accent.canvas,
+        0,
+        0,
+        fragment.width,
+        fragment.height,
+      )
+      image.globalCompositeOperation = 'source-over'
+      image.drawImage(
+        fragment.base.canvas,
+        0,
+        0,
+        fragment.width,
+        fragment.height,
+      )
+    }
   }
 
   function drawSamples(c: string) {
     // Sample cells turn the lower edge into a compact spectrum instrument.
     const start = width * 0.42
     const end = width * 0.95
-    const cells = width < 600 ? 32 : 56
+    const cells = 56
     for (let i = 0; i < cells; i += 1) {
       const energy =
         0.2 +
@@ -313,6 +513,7 @@ export function createSignalField(
     }
     ctx.fillStyle = `rgba(${c},.5)`
     ctx.font = '12px "Manrope", sans-serif'
+    ctx.textBaseline = 'middle'
     ctx.fillText(
       `${family.name.toUpperCase()} / SYNTHESIZED CARRIER`,
       start,
@@ -321,7 +522,13 @@ export function createSignalField(
   }
 
   function runnable() {
-    return !destroyed && visible && !document.hidden
+    return (
+      !destroyed &&
+      visible &&
+      !document.hidden &&
+      width > 0 &&
+      height > 0
+    )
   }
 
   function changing() {
@@ -331,24 +538,30 @@ export function createSignalField(
   }
 
   function advance(now: number) {
+    const elapsed = Math.min((now - previous) / 1000, 0.1)
+    const blend = 1 - Math.exp(-elapsed * 3.5)
+
     if (!paused) {
-      time += Math.min((now - previous) / 1000, 0.06)
+      time += elapsed
     }
 
     previous = now
-    color = color.map((value, i) => value + (target[i] - value) * 0.13)
+
+    for (let index = 0; index < color.length; index += 1) {
+      color[index] += (target[index] - color[index]) * blend
+    }
+
     draw()
   }
 
   function loop(now: number) {
     frame = 0
+
     if (!runnable()) {
       return
     }
 
-    if (now - previous >= 40) {
-      advance(now)
-    }
+    advance(now)
 
     if (changing()) {
       frame = requestAnimationFrame(loop)
@@ -357,20 +570,50 @@ export function createSignalField(
 
   function start() {
     if (!frame && runnable()) {
+      previous = performance.now()
       frame = requestAnimationFrame(loop)
     }
+  }
+
+  function stop() {
+    cancelAnimationFrame(frame)
+    frame = 0
+  }
+
+  function updateVisibility() {
+    if (runnable()) {
+      start()
+    } else {
+      stop()
+    }
+  }
+
+  function updateViewport() {
+    measureWaves()
+    draw()
   }
 
   function resize() {
     const { width: nextWidth, height: nextHeight } =
       canvas.getBoundingClientRect()
-    const dpr = Math.min(devicePixelRatio, 1.5)
+    const nextDpr = Math.min(window.devicePixelRatio || 1, 1.5)
+
+    if (nextWidth <= 0 || nextHeight <= 0) {
+      return
+    }
+
+    if (width === nextWidth && height === nextHeight && dpr === nextDpr) {
+      return
+    }
+
     width = nextWidth
     height = nextHeight
+    dpr = nextDpr
     canvas.width = Math.round(width * dpr)
     canvas.height = Math.round(height * dpr)
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     measureWords()
+    measureWaves()
     draw()
     start()
   }
@@ -379,12 +622,11 @@ export function createSignalField(
   resizeObserver.observe(canvas)
   const intersection = new IntersectionObserver((entries) => {
     visible = entries[0].isIntersecting
-    if (visible) {
-      start()
-    }
+    updateVisibility()
   })
   intersection.observe(canvas)
-  document.addEventListener('visibilitychange', start)
+  compact.addEventListener('change', updateViewport)
+  document.addEventListener('visibilitychange', updateVisibility)
   resize()
   void document.fonts.ready.then(() => {
     if (!destroyed) {
@@ -394,21 +636,30 @@ export function createSignalField(
   })
 
   return {
-    update(next: Family, stop: boolean) {
+    update(next: Family, nextPaused: boolean) {
       const changed = family.id !== next.id
+
       family = next
+
       if (changed) {
         target = rgb(next.foreground)
       }
-      paused = stop
+      paused = nextPaused
+
+      if (paused) {
+        color = [...target]
+        draw()
+      }
+
       start()
     },
     destroy() {
       destroyed = true
-      cancelAnimationFrame(frame)
+      stop()
       resizeObserver.disconnect()
       intersection.disconnect()
-      document.removeEventListener('visibilitychange', start)
+      compact.removeEventListener('change', updateViewport)
+      document.removeEventListener('visibilitychange', updateVisibility)
     },
   }
 }

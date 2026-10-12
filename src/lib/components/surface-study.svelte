@@ -1,5 +1,9 @@
 <script lang="ts">
+  import type { Attachment } from 'svelte/attachments'
+  import { prefersReducedMotion } from 'svelte/motion'
+
   import { rovingFocus } from '#lib/attachments/roving-focus'
+  import DirectionalText from '#lib/components/directional-text.svelte'
   import { base } from '#lib/theme'
 
   const surfaces = [
@@ -8,14 +12,69 @@
     { name: 'Raised plane', color: '#242424' },
   ]
 
-  let selected = $state(1)
-  let separation = $state(60)
+  const separation = 76
+
+  let selected = $state(0)
+  let hovered = $state(false)
+  let focused = $state(false)
 
   const surface = $derived(surfaces[selected])
   const channel = $derived(parseInt(surface.color.slice(1, 3), 16))
+
+  const attachCycle: Attachment<HTMLElement> = (element) => {
+    let visible = $state(false)
+    let active = $state(!document.hidden)
+
+    function updateVisibility() {
+      active = !document.hidden
+    }
+
+    $effect(() => {
+      const next = (selected + 1) % surfaces.length
+
+      const stopped = [
+        !visible,
+        !active,
+        hovered,
+        focused,
+        prefersReducedMotion.current,
+      ].some(Boolean)
+
+      if (stopped) {
+        return
+      }
+
+      const timer = setTimeout(() => (selected = next), 4500)
+
+      return () => clearTimeout(timer)
+    })
+
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting
+    })
+
+    observer.observe(element)
+    document.addEventListener('visibilitychange', updateVisibility)
+
+    return () => {
+      observer.disconnect()
+      document.removeEventListener('visibilitychange', updateVisibility)
+    }
+  }
 </script>
 
-<figure class="surface-study">
+<figure
+  class="surface-study"
+  {@attach attachCycle}
+  onpointerenter={() => (hovered = true)}
+  onpointerleave={() => (hovered = false)}
+  onfocusin={() => (focused = true)}
+  onfocusout={(event) => {
+    focused =
+      event.relatedTarget instanceof Node &&
+      event.currentTarget.contains(event.relatedTarget)
+  }}
+>
   <figcaption class="figure-heading instrument-label">
     <span>Surface composition</span>
     <span>R = G = B</span>
@@ -44,8 +103,12 @@
 
     <div class="surface-reading">
       <div class="surface-heading">
-        <span>{surface.name}</span>
-        <strong class="mono">{surface.color}</strong>
+        <span>
+          <DirectionalText value={surface.name} direction={1} />
+        </span>
+        <strong class="mono">
+          <DirectionalText value={surface.color} direction={1} />
+        </strong>
       </div>
 
       <dl class="channel-register">
@@ -83,20 +146,6 @@
         <span>{item.name}</span>
       </button>
     {/each}
-  </div>
-
-  <div class="separation-control">
-    <label for="surface-separation">Plane separation</label>
-    <input
-      id="surface-separation"
-      type="range"
-      min="0"
-      max="100"
-      step="1"
-      bind:value={separation}
-      aria-valuetext={`${separation} percent`}
-    />
-    <span class="mono" aria-hidden="true">{separation}%</span>
   </div>
 </figure>
 
@@ -162,7 +211,7 @@
       calc(var(--plane) * var(--separation)),
       calc(var(--plane) * var(--separation) * -1)
     );
-    transition: transform 250ms ease-out, border-color 200ms;
+    transition: border-color 800ms ease;
   }
 
   .neutral-plane.chosen {
@@ -223,7 +272,7 @@
     display: block;
     height: 100%;
     background: var(--secondary);
-    transition: width 200ms;
+    transition: width 800ms ease;
   }
 
   .surface-reading p {
@@ -248,6 +297,7 @@
     color: var(--secondary);
     font-size: var(--text-small);
     line-height: 1.5;
+    transition: border-color 800ms ease, color 800ms ease;
   }
 
   .surface-choices button[aria-pressed='true'] {
@@ -262,58 +312,6 @@
     border: 1px solid #545454;
   }
 
-  .separation-control {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) 4ch;
-    align-items: center;
-    gap: 16px;
-    min-height: 44px;
-    color: var(--secondary);
-    font-size: var(--text-small);
-  }
-
-  .separation-control > span {
-    text-align: right;
-  }
-
-  input {
-    appearance: none;
-    width: 100%;
-    min-width: 0;
-    height: 44px;
-    margin: 0;
-    background: transparent;
-    cursor: ew-resize;
-  }
-
-  input::-webkit-slider-runnable-track {
-    height: 2px;
-    background: #545454;
-  }
-
-  input::-moz-range-track {
-    height: 2px;
-    background: #545454;
-  }
-
-  input::-webkit-slider-thumb {
-    appearance: none;
-    width: 12px;
-    height: 12px;
-    margin-top: -5px;
-    border: 0;
-    border-radius: 50%;
-    background: var(--ink);
-  }
-
-  input::-moz-range-thumb {
-    width: 12px;
-    height: 12px;
-    border: 0;
-    border-radius: 50%;
-    background: var(--ink);
-  }
-
   @media (max-width: 700px) {
     .surface-heading strong {
       font-size: var(--text-body);
@@ -325,14 +323,6 @@
 
     .surface-choices {
       gap: 12px;
-    }
-
-    .separation-control {
-      grid-template-columns: minmax(0, 1fr) 4ch;
-    }
-
-    .separation-control label {
-      grid-column: 1 / -1;
     }
   }
 </style>
