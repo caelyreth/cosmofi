@@ -1,0 +1,285 @@
+@font-face {
+  font-family: 'Bricolage';
+  src: url('/fonts/bricolage.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Manrope';
+  src: url('/fonts/manrope.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Martian Mono';
+  src: url('/fonts/martian-mono.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+}
+* {
+  box-sizing: border-box;
+}
+html {
+  --page-inset: 40px;
+  height: 100%;
+  overflow: hidden;
+  background: #161616;
+  color-scheme: dark;
+}
+body {
+  height: 100%;
+  overflow: hidden;
+  margin: 0;
+  font-family: 'Manrope', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+}
+button,
+a,
+input {
+  -webkit-tap-highlight-color: transparent;
+}
+button {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  text-align: inherit;
+  cursor: pointer;
+}
+
+button::-moz-focus-inner {
+  padding: 0;
+  border: 0;
+}
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+}
+button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--halo-foreground, #a19ec2);
+  outline-offset: 5px;
+}
+::selection {
+  background: #58566f;
+  color: #d9d7cd;
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #545450 transparent;
+}
+input {
+  caret-color: var(--halo-foreground);
+}
+input::placeholder {
+  color: var(--secondary);
+  opacity: 1;
+}
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+h1,
+h2,
+h3 {
+  font-family: 'Bricolage', sans-serif;
+  font-weight: 500;
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
+button svg,
+a svg {
+  flex-shrink: 0;
+}
+.site {
+  --panel: #1A1A1A;
+  --edge-inset: 24px;
+  --header-top: max(var(--edge-inset), env(safe-area-inset-top));
+  --header-bottom: calc(var(--header-top) + 44px);
+  --content-top: calc(var(--header-bottom) + var(--edge-inset));
+  --content-bottom: max(var(--edge-inset), env(safe-area-inset-bottom));
+  position: relative;
+  background-color: var(--page);
+  color: var(--ink);
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.screen {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.split-screen {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+}
+
+.scroll-pane {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+.frame {
+  width: calc(100% - 2 * var(--page-inset));
+  margin-inline: auto;
+}
+.mono {
+  font-family: 'Martian Mono', monospace;
+}
+.solid-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  min-height: 50px;
+  padding: 0.85rem 1.4rem;
+  background: var(--ink);
+  color: var(--page);
+  border: 1px solid transparent;
+  border-radius: 1px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    background 180ms ease-out,
+    color 180ms ease-out;
+}
+.instrument-label {
+  font-family: 'Martian Mono', monospace;
+  font-size: 9px;
+  line-height: 1.7;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+.solid-link:hover {
+  background: var(--moonveil-emphasis);
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+.hero-wordmark {
+  font-optical-sizing: none;
+}
+:root::view-transition-old(root),
+:root::view-transition-new(root) {
+  animation: none;
+}
+
+:root::view-transition-group(cosmofi-wordmark) {
+  animation-duration: 550ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root::view-transition-old(cosmofi-icon),
+:root::view-transition-new(cosmofi-icon) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+:root::view-transition-old(cosmofi-wordmark),
+:root::view-transition-new(cosmofi-wordmark) {
+  width: 100%;
+  height: 100%;
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* Use the larger capture in either direction, keeping the shared movement
+   without stretching the compact header's low-resolution image. */
+:root[data-route-transition='forward']::view-transition-new(cosmofi-wordmark),
+:root[data-route-transition='back']::view-transition-old(cosmofi-wordmark) {
+  opacity: 0;
+}
+
+:root::view-transition-old(route-content) {
+  animation: route-leave 180ms ease-out both;
+}
+
+:root::view-transition-new(route-content) {
+  animation: route-enter 300ms ease-out both;
+}
+
+@keyframes route-leave {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes route-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@media (max-width: 900px) {
+  html {
+    --page-inset: 24px;
+  }
+  .site {
+    --edge-inset: 20px;
+  }
+}
+@media (max-width: 600px) {
+  html {
+    --page-inset: 20px;
+  }
+}
+@media (max-height: 500px) {
+  .site {
+    --edge-inset: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root::view-transition-group(*),
+  :root::view-transition-old(*),
+  :root::view-transition-new(*) {
+    animation-duration: 0.01ms !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
