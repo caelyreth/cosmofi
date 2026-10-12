@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { getPresentation } from '#lib/presentation.svelte.js'
-  import { families } from '#lib/theme.js'
+  import { getPresentation } from '#lib/presentation.svelte'
+  import { families } from '#lib/theme'
 
   let { label = 'Color family' }: { label?: string } = $props()
   const presentation = getPresentation()

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { colorFormats, readableInk } from '#lib/color.js'
-  import { families, roles, type Family } from '#lib/theme.js'
+  import { colorFormats, readableInk } from '#lib/color'
+  import { families, roles, type Family } from '#lib/theme'
 
   import ColorCopy from './color-copy.svelte'
   import DirectionalText from './directional-text.svelte'

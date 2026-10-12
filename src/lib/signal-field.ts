@@ -1,4 +1,4 @@
-import { families, type Family } from './theme.js'
+import { families, type Family } from './theme'
 
 export function createSignalField(
   canvas: HTMLCanvasElement,

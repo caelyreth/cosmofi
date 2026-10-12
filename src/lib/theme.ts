@@ -82,64 +82,8 @@ export const base = {
   'background': '#161616',
   'text-primary': '#C1BFB3',
   'text-secondary': '#92918B',
-  'text-muted': '#545450',
+  'text-muted': '#77766D',
 } as const
-
-export type TokenGroupId = 'base' | FamilyId
-
-export const tokenGroups = [
-  {
-    id: 'base',
-    name: 'Base',
-    description: 'Charcoal ground. Three levels of reading light.',
-    foreground: base['text-primary'],
-  },
-  ...families,
-] as const
-
-export type Token = {
-  name: string
-  value: string
-  rgb: string
-  group: TokenGroupId
-  family: string
-}
-
-export function rgb(hex: string) {
-  return [1, 3, 5]
-    .map((start) => Number.parseInt(hex.slice(start, start + 2), 16))
-    .join(', ')
-}
-
-const baseTokens: Token[] = Object.entries(base).map(([name, value]) => ({
-  name,
-  value,
-  rgb: rgb(value),
-  group: 'base',
-  family: 'Base',
-}))
-
-const familyTokens: Token[] = families.flatMap((family) =>
-  roles.map((role) => ({
-    name: `${family.id}-${role}`,
-    value: family[role],
-    rgb: rgb(family[role]),
-    group: family.id,
-    family: family.name,
-  })),
-)
-
-export const tokens: readonly Token[] = [...baseTokens, ...familyTokens]
-
-export const tokensByGroup: Readonly<
-  Record<TokenGroupId, readonly Token[]>
-> = tokenGroups.reduce(
-  (groups, group) => {
-    groups[group.id] = tokens.filter((token) => token.group === group.id)
-    return groups
-  },
-  {} as Record<TokenGroupId, readonly Token[]>,
-)
 
 export const familyById: Readonly<Record<FamilyId, Family>> =
   Object.fromEntries(
@@ -150,14 +94,6 @@ export const familyIndex: Readonly<Record<FamilyId, number>> =
   Object.fromEntries(
     families.map((family, index) => [family.id, index]),
   ) as Record<FamilyId, number>
-
-export const cssExport = `/* Cosmofi Starfield by Caelyreth
- * Swatch roles are descriptive; terminal/editor mappings are not specified.
- */
-:root {
-${tokens.map((token) => `  --cosmofi-${token.name}: ${token.value};`).join('\n')}
-}
-`
 
 export const siteStyle = [
   `--page:${base.background}`,

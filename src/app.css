@@ -157,33 +157,12 @@ a svg {
 .mono {
   font-family: 'Martian Mono', monospace;
 }
-.solid-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1.5rem;
-  min-height: 50px;
-  padding: 0.85rem 1.4rem;
-  background: var(--ink);
-  color: var(--page);
-  border: 1px solid transparent;
-  border-radius: 1px;
-  font-size: 0.875rem;
-  font-weight: 700;
-  text-decoration: none;
-  transition:
-    background 180ms ease-out,
-    color 180ms ease-out;
-}
 .instrument-label {
   font-family: 'Martian Mono', monospace;
   font-size: 9px;
   line-height: 1.7;
   letter-spacing: 0;
   text-transform: uppercase;
-}
-.solid-link:hover {
-  background: var(--moonveil-emphasis);
 }
 .sr-only {
   position: absolute;

@@ -1,6 +1,6 @@
 <script lang="ts">
   import SpectrumRegister from '#lib/components/spectrum-register.svelte'
-  import { getPresentation } from '#lib/presentation.svelte.js'
+  import { getPresentation } from '#lib/presentation.svelte'
 
   const presentation = getPresentation()
 </script>

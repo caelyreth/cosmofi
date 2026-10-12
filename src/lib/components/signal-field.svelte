@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { Attachment } from 'svelte/attachments'
 
-  import { createSignalField } from '#lib/signal-field.js'
-  import { families, type Family } from '#lib/theme.js'
+  import { createSignalField } from '#lib/signal-field'
+  import { families, type Family } from '#lib/theme'
 
   let { family, paused = false }: { family: Family; paused?: boolean } =
     $props()

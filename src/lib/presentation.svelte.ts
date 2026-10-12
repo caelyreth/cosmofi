@@ -1,14 +1,12 @@
 import { createContext } from 'svelte'
 import { prefersReducedMotion } from 'svelte/motion'
 
-import type { ColorFormat } from './color.js'
-import { families, familyIndex, type FamilyId } from './theme.js'
+import { families, familyIndex, type FamilyId } from './theme'
 
 export class Presentation {
   #channel = $state(1)
   direction = $state<-1 | 1>(1)
   loopColors = $state(true)
-  colorFormat = $state<ColorFormat>('hex')
 
   get channel() {
     return this.#channel

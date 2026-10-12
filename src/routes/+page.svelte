@@ -8,8 +8,8 @@
   import DirectionalText from '#lib/components/directional-text.svelte'
   import FamilySelector from '#lib/components/family-selector.svelte'
   import SignalField from '#lib/components/signal-field.svelte'
-  import { getPresentation } from '#lib/presentation.svelte.js'
-  import { families } from '#lib/theme.js'
+  import { getPresentation } from '#lib/presentation.svelte'
+  import { families } from '#lib/theme'
 
   const presentation = getPresentation()
   let tunerHovered = $state(false)
@@ -60,7 +60,6 @@
   const destinations = [
     { href: '/introduction', label: 'Introduction' },
     { href: '/spectrum', label: 'Spectrum' },
-    { href: '/tokens', label: 'Token table' },
   ]
 </script>
 

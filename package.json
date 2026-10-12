@@ -18,7 +18,8 @@
   },
   "dependencies": {
     "culori": "^4.0.2",
-    "lucide-svelte": "^1.0.1"
+    "lucide-svelte": "^1.0.1",
+    "rangi": "^2.2.0"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^8.0.0",

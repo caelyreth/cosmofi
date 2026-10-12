@@ -3,7 +3,7 @@
     colorDisplayValue,
     colorValue,
     type ColorFormat,
-  } from '#lib/color.js'
+  } from '#lib/color'
 
   import CopyButton from './copy-button.svelte'
 

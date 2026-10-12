@@ -1,583 +1,639 @@
 <script lang="ts">
   import { snapshot } from '$app/navigation'
 
-  import FamilySelector from '#lib/components/family-selector.svelte'
-  import SignalScope from '#lib/components/signal-scope.svelte'
-  import Workspace from '#lib/components/workspace.svelte'
-  import { getPresentation } from '#lib/presentation.svelte.js'
-  import { families, roles } from '#lib/theme.js'
+  import CodeSpecimen from '#lib/components/code-specimen.svelte'
+  import {
+    syntaxColors,
+    syntaxRoles,
+    type LanguageId,
+  } from '#lib/syntax'
+  import { base, families } from '#lib/theme'
 
-  const presentation = getPresentation()
-  let view = $state<'origin' | 'workspace'>('origin')
+  import type { PageProps } from './$types'
+
+  let { data }: PageProps = $props()
+  let scroller = $state<HTMLElement>()
+  let restoredScroll = $state<number>()
+  let language = $state<LanguageId>('ts')
 
   snapshot({
-    id: 'cosmofi-introduction-view',
-    capture: () => view,
-    restore: (restoredView) => {
-      view = restoredView
+    id: 'cosmofi-introduction',
+    capture: () => ({ scrollTop: scroller?.scrollTop ?? 0, language }),
+    restore: (saved) => {
+      language = saved.language
+      restoredScroll = saved.scrollTop
     },
     reset: () => {
-      view = 'origin'
+      language = 'ts'
+      restoredScroll = 0
     },
+  })
+
+  $effect(() => {
+    if (scroller && restoredScroll !== undefined) {
+      scroller.scrollTo({ top: restoredScroll, behavior: 'instant' })
+    }
   })
 </script>
 
 <svelte:head>
-  <title>Introduction — Cosmofi Starfield</title>
+  <title>Introduction - Cosmofi Starfield</title>
   <meta
     name="description"
-    content="Cosmic color, lo-fi feeling. The story behind Cosmofi Starfield and a live code specimen in eight color families."
+    content="Pure grayscale surfaces, a deliberate color range, and Cosmofi syntax highlighting in TypeScript, C++, Rust, and Swift."
   />
 </svelte:head>
 
-<main id="main" class="introduction screen">
-  <div class="view-tabs" role="radiogroup" aria-label="Introduction view">
-    <label>
-      <input
-        type="radio"
-        name="introduction-view"
-        value="origin"
-        bind:group={view}
-      />
-      <span>Origin</span>
-    </label>
-    <label>
-      <input
-        type="radio"
-        name="introduction-view"
-        value="workspace"
-        bind:group={view}
-      />
-      <span>In use</span>
-    </label>
-  </div>
+<!-- svelte-ignore a11y_no_noninteractive_tabindex (The introduction is the route's native scroll container.) -->
+<main
+  id="main"
+  class="introduction screen scroll-pane"
+  bind:this={scroller}
+  tabindex="0"
+  aria-labelledby="introduction-title"
+>
+  <section class="chapter split-screen" aria-labelledby="introduction-title">
+    <div class="chapter-copy">
+      <div class="chapter-writing">
+        <span class="chapter-number instrument-label">01 / Surfaces</span>
 
-  {#if view === 'origin'}
-    <section class="origin view split-screen" aria-labelledby="origin-title">
-      <div class="origin-narrative">
-        <!-- svelte-ignore a11y_no_noninteractive_tabindex (The story pane accepts keyboard scrolling on compact screens.) -->
-        <div
-          class="origin-writing scroll-pane"
-          tabindex="0"
-          role="region"
-          aria-labelledby="origin-title"
-        >
-          <h1 id="origin-title">Far out.<br /><span>Tuned in.</span></h1>
-          <p class="origin-intro">
-            A little of the distant. A little of the familiar. Cosmofi
-            brings the two into the same room.
-          </p>
-          <div class="name-story">
-            <div>
-              <h2>cosmic</h2>
-              <p>
-                Distant light. Mineral dust. Violet at the edge of an orbit.
-              </p>
-            </div>
-            <div>
-              <h2>lo-fi</h2>
-              <p>
-                Charcoal, softened whites, and dusty accents. A familiar
-                warmth for the screen you return to.
-              </p>
-            </div>
-          </div>
-          <p class="origin-note">
-            Cosmic + lo-fi.<br />Made for the hours between.
+        <div class="chapter-heading">
+          <h1 id="introduction-title">Pure grayscale<br />surfaces.</h1>
+          <p>
+            The interface begins with equal red, green, and blue values.
+            A neutral background keeps color out of the surroundings and
+            attention on the content.
           </p>
         </div>
-      </div>
-      <div class="origin-visual">
-        <div class="origin-visual-top instrument-label">
-          <span>Cosmofi / Starfield</span>
-          <span>Two worlds. One frequency.</span>
-        </div>
-        <div class="origin-equation" aria-label="Cosmic times lo-fi">
-          <span class="cosmic-word">cosmic</span>
-          <span class="multiply" aria-hidden="true">×</span>
-          <span class="lofi-word">lo-fi</span>
-        </div>
-        <SignalScope
-          channel={presentation.channel}
-          mix={24}
-          paused={presentation.paused}
-        />
-        <div class="origin-visual-foot">
-          <p>Distant hues.<br />Everyday company.</p>
-          <div aria-hidden="true">
-            {#each families as family}
-              <i style:background={family.foreground}></i>
-            {/each}
+
+        <dl class="principles">
+          <div>
+            <dt>No color cast</dt>
+            <dd>
+              Neither warm nor cool. Accents sit on the same unbiased
+              field, without a tinted surface shifting their appearance.
+            </dd>
           </div>
-        </div>
+          <div>
+            <dt>Depth through brightness</dt>
+            <dd>
+              Small changes in lightness separate the background from
+              working surfaces. No grain, tint, or overlay is added.
+            </dd>
+          </div>
+        </dl>
       </div>
-    </section>
-  {:else}
-    <section
-      class="workspace-layout view split-screen"
-      aria-labelledby="workspace-title"
-    >
-      <div class="workspace-intro">
-        <!-- svelte-ignore a11y_no_noninteractive_tabindex (The preview controls accept keyboard scrolling on compact screens.) -->
+    </div>
+
+    <div class="chapter-visual">
+      <figure class="visual-content neutral-study">
+        <figcaption class="figure-heading instrument-label">
+          <span>Surface composition</span>
+          <span>R = G = B</span>
+        </figcaption>
+
         <div
-          class="workspace-writing scroll-pane"
-          tabindex="0"
-          role="region"
-          aria-labelledby="workspace-title"
+          class="neutral-composition"
+          role="img"
+          aria-label="Overlapping grayscale planes show depth through brightness, with no hue in any surface."
         >
-        <h1 id="workspace-title">
-          A familiar place.<br /><span>A different atmosphere.</span>
-        </h1>
-        <p>
-          From the first idea to the last line of code. See Starfield where
-          your ideas take shape.
+          <span class="plane-ground"></span>
+          <span class="plane-raised"></span>
+          <span class="plane-recess"></span>
+          <span class="plane-outline"></span>
+          <span class="plane-axis"></span>
+          <span class="plane-label instrument-label">Neutral field</span>
+        </div>
+
+        <dl class="surface-register">
+          <div>
+            <dt>Background</dt>
+            <dd class="mono">{base.background}</dd>
+          </div>
+          <div>
+            <dt>Working surface</dt>
+            <dd class="mono">#1A1A1A</dd>
+          </div>
+        </dl>
+
+        <div class="channel-register" aria-label="Background RGB channels">
+          {#each ['R', 'G', 'B'] as channel}
+            <div>
+              <span class="instrument-label">{channel}</span>
+              <span class="channel-track" aria-hidden="true"></span>
+              <span class="mono">22</span>
+            </div>
+          {/each}
+        </div>
+      </figure>
+    </div>
+  </section>
+
+  <section class="chapter split-screen" aria-labelledby="color-title">
+    <div class="chapter-copy">
+      <div class="chapter-writing">
+        <span class="chapter-number instrument-label">02 / Color choices</span>
+
+        <div class="chapter-heading">
+          <h2 id="color-title">A quieter<br />color range.</h2>
+          <p>
+            Cyan and blue are deliberately absent. The palette uses
+            softened violet, rose, green, and earth tones to keep visual
+            intensity low during long reading sessions.
+          </p>
+        </div>
+
+        <dl class="principles">
+          <div>
+            <dt>Less competition</dt>
+            <dd>
+              Fewer hue families compete for attention. Color separates
+              meaningful details instead of filling every part of the view.
+            </dd>
+          </div>
+          <div>
+            <dt>Restrained accents</dt>
+            <dd>
+              Each family keeps a measured foreground and a stronger
+              emphasis. Neutrals carry the rest of the reading hierarchy.
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <div class="chapter-visual">
+      <figure class="visual-content chroma-study">
+        <figcaption class="figure-heading instrument-label">
+          <span>Selected color range</span>
+          <span>Eight families</span>
+        </figcaption>
+
+        <div
+          class="chroma-rail"
+          role="img"
+          aria-label="The eight Cosmofi foreground colors: Static, Halo, Afterglow, Remnant, Unripe, Life, Regolith, and Moonveil."
+        >
+          {#each families as family (family.id)}
+            <span
+              style:background={family.foreground}
+              title={family.name}
+            ></span>
+          {/each}
+        </div>
+
+        <div class="chroma-key">
+          {#each families as family (family.id)}
+            <div>
+              <i style:background={family.foreground} aria-hidden="true"></i>
+              <span>{family.name}</span>
+            </div>
+          {/each}
+        </div>
+
+        <div class="omitted-range">
+          {#each ['Cyan', 'Blue'] as name}
+            <div>
+              <div class="range-label">
+                <span>{name}</span>
+                <span class="instrument-label">Omitted</span>
+              </div>
+              <span class="empty-range" aria-hidden="true"></span>
+            </div>
+          {/each}
+        </div>
+
+        <p class="figure-note">
+          A deliberate gap in the palette. Color is reserved for structure,
+          with a neutral field around it.
         </p>
-        <FamilySelector label="Workspace color family" />
-        <div class="workspace-family">
-          <h2>{presentation.family.name}</h2>
-          <span class="mono">{presentation.family.foreground}</span>
+      </figure>
+    </div>
+  </section>
+
+  <section class="chapter split-screen" aria-labelledby="syntax-title">
+    <div class="chapter-copy">
+      <div class="chapter-writing">
+        <span class="chapter-number instrument-label">03 / In use</span>
+
+        <div class="chapter-heading">
+          <h2 id="syntax-title">Structure<br />at a glance.</h2>
+          <p>
+            Punctuation stays muted and variables use the normal
+            foreground. Color marks the role of a word, keeping the same
+            visual hierarchy across four languages.
+          </p>
         </div>
-        <dl class="workspace-values">
-          {#each roles as role}
+
+        <dl class="syntax-legend">
+          {#each syntaxRoles as role (role.id)}
             <div>
-              <dt>{role}</dt>
-              <dd class="mono">{presentation.family[role]}</dd>
+              <dt>
+                <i
+                  style:background={syntaxColors[role.id]}
+                  aria-hidden="true"
+                ></i>
+                <span>{role.label}</span>
+              </dt>
+              <dd style:color={syntaxColors[role.id]}>{role.family}</dd>
             </div>
           {/each}
         </dl>
-        <p class="workspace-disclosure">
-          Illustrative syntax mapping. Your editor, another atmosphere.
-        </p>
-        </div>
       </div>
-      <Workspace family={presentation.family} />
-    </section>
-  {/if}
+    </div>
+
+    <div class="chapter-visual">
+      <div class="visual-content">
+        <CodeSpecimen examples={data.examples} bind:language />
+      </div>
+    </div>
+  </section>
 </main>
 
 <style>
   .introduction {
-    display: grid;
     position: relative;
-    grid-template-rows: minmax(0, 1fr);
+    overflow-x: hidden;
+    background: var(--page);
   }
 
-  .view-tabs {
-    position: absolute;
-    top: var(--header-top);
-    left: calc(var(--page-inset) + 168px);
-    z-index: 10;
+  .chapter {
+    min-height: 100%;
+    border-bottom: 1px solid #2D2D2D;
+  }
+
+  .chapter:last-child {
+    border-bottom: 0;
+  }
+
+  .chapter-copy,
+  .chapter-visual {
     display: flex;
     align-items: center;
-    gap: 20px;
-    height: 44px;
-  }
-
-  .view-tabs label {
-    position: relative;
-    display: grid;
-    place-items: center;
-    min-height: 44px;
-    font-size: 12px;
-    color: var(--secondary);
-    cursor: pointer;
-  }
-
-  .view-tabs input {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    opacity: 0;
-  }
-
-  .view-tabs input:checked + span {
-    color: var(--ink);
-    text-decoration: underline;
-    text-underline-offset: 8px;
-  }
-
-  .view-tabs input:focus-visible + span {
-    outline: 2px solid var(--halo-foreground);
-    outline-offset: 6px;
-  }
-
-  .view {
-    min-height: 0;
     min-width: 0;
-    animation: view-enter 220ms ease-out;
-  }
-
-  .origin-narrative {
-    display: grid;
-    grid-template-rows: minmax(0, 1fr);
-    min-width: 0;
-    min-height: 0;
     padding: var(--content-top) var(--page-inset) var(--content-bottom);
   }
 
-  .origin-writing {
+  .chapter-copy {
+    background: var(--page);
+  }
+
+  .chapter-visual {
+    background: var(--panel);
+  }
+
+  .chapter-writing,
+  .visual-content {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
     width: 100%;
     min-width: 0;
-    height: 100%;
-    max-width: 550px;
-    align-content: safe center;
+    margin: 0;
   }
 
-  h1 {
-    font-size: 64px;
-    line-height: 0.97;
+  .chapter-writing {
+    max-width: 440px;
+    margin-inline: auto;
   }
 
-  .origin-narrative h1 span {
-    color: var(--regolith-foreground);
+  .visual-content {
+    max-width: 780px;
+    margin-inline: auto;
   }
 
-  .origin-intro {
-    max-width: 36ch;
-    font-size: 15px;
-    line-height: 1.85;
-    margin-top: 24px;
-  }
-
-  .name-story {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 24px;
-    margin-top: 24px;
-    padding-top: 20px;
-    border-top: 1px solid var(--static-muted);
-  }
-
-  .name-story h2 {
-    font-size: 32px;
-  }
-
-  .name-story > div:first-child h2 {
-    color: var(--halo-foreground);
-  }
-
-  .name-story > div:last-child h2 {
-    color: var(--regolith-foreground);
-  }
-
-  .name-story p {
-    margin-top: 12px;
-    font-size: 12px;
-    line-height: 1.85;
+  .chapter-number {
     color: var(--secondary);
   }
 
-  .origin-note {
+  h1,
+  h2 {
+    font-size: 56px;
+    line-height: 1.02;
+  }
+
+  .chapter-heading p {
+    max-width: 38ch;
     margin-top: 24px;
-    font-size: 12px;
-    line-height: 1.8;
     color: var(--secondary);
-  }
-
-  .origin-visual {
-    display: flex;
-    container-type: inline-size;
-    flex-direction: column;
-    min-width: 0;
-    min-height: 0;
-    padding: var(--header-top) var(--page-inset) var(--content-bottom);
-    overflow: hidden;
-    background: var(--regolith-foreground);
-    color: var(--page);
-  }
-
-  .origin-visual-top {
-    display: flex;
-    justify-content: space-between;
-    gap: 24px;
-    font-size: 8px;
-  }
-
-  .origin-equation {
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding-block: 24px;
-    font:
-      500 clamp(64px, 17cqw, 150px)/0.88 'Bricolage',
-      sans-serif;
-  }
-
-  .cosmic-word {
-    align-self: flex-start;
-  }
-
-  .multiply {
-    align-self: center;
-    font-size: 0.45em;
-    margin-block: 8px;
-  }
-
-  .lofi-word {
-    align-self: flex-end;
-  }
-
-  .origin-visual-foot {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 24px;
-    margin-top: 24px;
-  }
-
-  .origin-visual-foot p {
-    font:
-      500 28px/1.05 'Bricolage',
-      sans-serif;
-  }
-
-  .origin-visual-foot > div {
-    display: flex;
-    gap: 3px;
-  }
-
-  .origin-visual-foot i {
-    width: 10px;
-    height: 20px;
-  }
-
-  .workspace-intro {
-    display: grid;
-    grid-template-rows: minmax(0, 1fr);
-    min-width: 0;
-    min-height: 0;
-    padding: var(--content-top) var(--page-inset) var(--content-bottom);
-  }
-
-  .workspace-writing {
-    display: flex;
-    flex-direction: column;
-    justify-content: safe center;
-    gap: 24px;
-  }
-
-  .workspace-writing > * {
-    flex-shrink: 0;
-  }
-
-  .workspace-intro h1 {
-    font-size: 44px;
-  }
-
-  .workspace-intro h1 span {
-    color: var(--halo-foreground);
-  }
-
-  .workspace-writing > p {
     font-size: 13px;
     line-height: 1.85;
-    max-width: 40ch;
   }
 
-  .workspace-intro :global(.family-selector) {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0 12px;
+  .principles,
+  .surface-register,
+  .syntax-legend {
+    margin: 0;
   }
 
-  .workspace-family {
+  .principles {
+    display: grid;
+    gap: 22px;
+    padding-top: 24px;
+    border-top: 1px solid #333333;
+  }
+
+  .principles dt {
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .principles dd {
+    max-width: 42ch;
+    margin: 8px 0 0;
+    color: var(--secondary);
+    font-size: 11px;
+    line-height: 1.85;
+  }
+
+  .figure-heading {
     display: flex;
-    align-items: baseline;
     flex-wrap: wrap;
     justify-content: space-between;
     gap: 12px;
-    color: var(--channel);
-  }
-
-  .workspace-family h2 {
-    font-size: 27px;
-  }
-
-  .workspace-family > span {
-    font-size: 12px;
-  }
-
-  .workspace-values {
-    display: grid;
-    margin: 0;
-  }
-
-  .workspace-values > div {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-    border-top: 1px solid var(--static-muted);
-    padding-block: 9px;
-    font-size: 12px;
-  }
-
-  .workspace-values dt,
-  .workspace-disclosure {
     color: var(--secondary);
   }
 
-  .workspace-values dd {
+  .neutral-composition {
+    position: relative;
+    width: 100%;
+    height: clamp(230px, 42svh, 390px);
+    overflow: hidden;
+    color: #929292;
+  }
+
+  .plane-ground,
+  .plane-raised,
+  .plane-recess,
+  .plane-outline,
+  .plane-axis {
+    position: absolute;
+  }
+
+  .plane-ground {
+    inset: 0;
+    background: var(--page);
+  }
+
+  .plane-raised {
+    top: 12%;
+    left: 24%;
+    width: 64%;
+    height: 68%;
+    background: #242424;
+  }
+
+  .plane-recess {
+    bottom: 0;
+    left: 10%;
+    width: 38%;
+    height: 58%;
+    background: var(--panel);
+  }
+
+  .plane-outline {
+    right: 4%;
+    bottom: 8%;
+    width: 36%;
+    height: 44%;
+    border: 1px solid #545454;
+  }
+
+  .plane-axis {
+    top: 0;
+    bottom: 0;
+    left: 64%;
+    width: 1px;
+    background: #3A3A3A;
+  }
+
+  .plane-label {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    font-size: 8px;
+  }
+
+  .surface-register {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .surface-register > div {
+    display: grid;
+    gap: 10px;
+  }
+
+  .surface-register dt {
+    color: var(--secondary);
+    font-size: 11px;
+  }
+
+  .surface-register dd {
     margin: 0;
+    font-size: 12px;
   }
 
-  @keyframes view-enter {
-    from {
-      opacity: 0;
-    }
+  .channel-register {
+    display: grid;
+    gap: 12px;
+    padding-top: 24px;
+    border-top: 1px solid #333333;
+    color: var(--secondary);
   }
 
-  @media (max-width: 1100px), (max-height: 700px) {
-    h1 {
-      font-size: 48px;
-    }
-
-    .origin-intro {
-      font-size: 13px;
-      margin-top: 18px;
-    }
-
-    .name-story {
-      gap: 20px;
-      margin-top: 20px;
-    }
-
-    .origin-note {
-      margin-top: 20px;
-    }
-
-    .workspace-intro h1 {
-      font-size: 36px;
-    }
-
-    .workspace-writing {
-      gap: 16px;
-    }
+  .channel-register > div {
+    display: grid;
+    grid-template-columns: 16px minmax(0, 1fr) 24px;
+    align-items: center;
+    gap: 16px;
   }
 
-  @media (max-height: 700px) {
-    .origin-equation {
-      font-size: 80px;
-      padding-block: 12px;
-    }
-
-    .origin-visual-top {
-      display: none;
-    }
-
-    .origin-visual :global(svg) {
-      height: 80px;
-    }
-
-    .origin-visual-foot p {
-      font-size: 20px;
-    }
+  .channel-register .mono {
+    font-size: 9px;
+    text-align: right;
   }
 
-  @media (max-width: 900px) {
-    .view-tabs {
-      left: auto;
-      right: var(--page-inset);
-    }
-
-    .origin {
-      grid-template-columns: 1fr;
-      grid-template-rows: minmax(0, 1fr) minmax(160px, 30%);
-    }
-
-    h1 {
-      font-size: 40px;
-    }
-
-    .origin-equation {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding-block: 0;
-      font-size: 40px;
-    }
-
-    .cosmic-word,
-    .lofi-word,
-    .multiply {
-      align-self: center;
-    }
-
-    .multiply {
-      margin: 0;
-    }
-
-    .origin-visual-top,
-    .origin-visual-foot {
-      display: none;
-    }
-
-    .origin-visual :global(svg) {
-      height: 40px;
-    }
-
-    .origin-visual :global(.scope-top) {
-      margin-bottom: 6px;
-    }
-
-    .origin-visual :global(.scope-bottom) {
-      margin-top: 6px;
-    }
-
-    .workspace-layout {
-      grid-template-columns: 1fr;
-      grid-template-rows: minmax(0, 1fr) minmax(180px, 42%);
-    }
-
-    .workspace-intro h1 {
-      font-size: 30px;
-    }
+  .channel-track {
+    position: relative;
+    height: 2px;
+    background: #2D2D2D;
   }
 
-  @media (max-height: 500px) {
-    .origin {
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: minmax(0, 1fr);
-    }
+  .channel-track::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: calc(100% * 22 / 255);
+    background: #929292;
+  }
 
-    .origin-equation {
-      flex-direction: column;
+  .chroma-rail {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 3px;
+    height: clamp(150px, 28svh, 250px);
+  }
+
+  .chroma-key {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px 20px;
+  }
+
+  .chroma-key > div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+  }
+
+  .chroma-key i,
+  .syntax-legend i {
+    display: block;
+    width: 8px;
+    height: 8px;
+    flex-shrink: 0;
+  }
+
+  .omitted-range {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #333333;
+  }
+
+  .range-label {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+    color: var(--secondary);
+    font-size: 11px;
+  }
+
+  .range-label .instrument-label {
+    font-size: 8px;
+  }
+
+  .empty-range {
+    display: block;
+    height: 64px;
+    margin-top: 16px;
+    border: 1px dashed #404040;
+  }
+
+  .figure-note {
+    max-width: 54ch;
+    color: var(--secondary);
+    font-size: 11px;
+    line-height: 1.8;
+  }
+
+  .syntax-legend {
+    border-top: 1px solid #333333;
+  }
+
+  .syntax-legend > div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 20px;
+    min-height: 38px;
+    padding-block: 8px;
+    border-bottom: 1px solid #292929;
+    font-size: 11px;
+  }
+
+  .syntax-legend dt {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .syntax-legend dd {
+    margin: 0;
+    font-size: 10px;
+  }
+
+  @media (max-width: 1100px) {
+    h1,
+    h2 {
       font-size: 44px;
     }
 
-    .workspace-layout {
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: minmax(0, 1fr);
-    }
-
-    .origin-visual :global(.scope),
-    .origin-visual-foot {
-      display: none;
+    .chroma-key {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
-  @media (max-height: 500px) and (min-width: 601px) {
-    .view-tabs {
-      left: calc(var(--page-inset) + 168px);
-      right: auto;
+  @media (max-width: 700px) {
+    .chapter {
+      grid-template-columns: minmax(0, 1fr);
+      min-height: auto;
+    }
+
+    .chapter-copy {
+      padding-bottom: 32px;
+    }
+
+    .chapter-visual {
+      padding-top: 28px;
+      padding-bottom: 36px;
+    }
+
+    .chapter-writing,
+    .visual-content {
+      max-width: 540px;
+      gap: 24px;
+    }
+
+    h1,
+    h2 {
+      font-size: 40px;
+    }
+
+    .chapter-heading p {
+      margin-top: 20px;
+    }
+
+    .neutral-composition {
+      height: 260px;
+    }
+
+    .chroma-rail {
+      height: 150px;
     }
   }
 
-  @media (max-height: 500px) and (max-width: 600px) {
-    .origin {
-      grid-template-columns: 1fr;
-      grid-template-rows: minmax(0, 1fr) 120px;
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .chapter {
+        view-timeline-name: --chapter;
+        view-timeline-axis: block;
+      }
+
+      .chapter:not(:first-child) .chapter-writing,
+      .chapter:not(:first-child) .visual-content {
+        animation: chapter-enter linear both;
+        animation-timeline: --chapter;
+        animation-range: entry 0% entry 85%;
+      }
+    }
+  }
+
+  @keyframes chapter-enter {
+    from {
+      opacity: 0.45;
+      transform: translateY(20px);
     }
 
-    .origin-equation {
-      flex-direction: row;
-      font-size: 36px;
-    }
-
-    .workspace-layout {
-      grid-template-columns: 1fr;
-      grid-template-rows: minmax(0, 1fr) minmax(96px, 45%);
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 </style>

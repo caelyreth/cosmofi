@@ -8,8 +8,8 @@
   import {
     Presentation,
     setPresentation,
-  } from '#lib/presentation.svelte.js'
-  import { siteStyle } from '#lib/theme.js'
+  } from '#lib/presentation.svelte'
+  import { siteStyle } from '#lib/theme'
 
   import type { LayoutProps } from './$types'
 
