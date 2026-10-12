@@ -17,9 +17,14 @@ export interface SignalRenderer {
   destroy(): void
 }
 
+interface SignalRendererOptions {
+  readonly onready?: () => void
+}
+
 export function createSignalRenderer(
   canvas: HTMLCanvasElement,
   initial: SignalState,
+  { onready }: SignalRendererOptions = {},
 ): SignalRenderer {
   const context = getContext2d(canvas)
 
@@ -44,6 +49,7 @@ export function createSignalRenderer(
   let frame = 0
   let visible = true
   let destroyed = false
+  let painted = false
 
   function draw() {
     if (viewport.width <= 0 || viewport.height <= 0) {
@@ -68,6 +74,11 @@ export function createSignalRenderer(
 
     if (!viewport.compact) {
       drawSamples(context, viewport, time, family, ink)
+    }
+
+    if (!painted) {
+      painted = true
+      onready?.()
     }
   }
 

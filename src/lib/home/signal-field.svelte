@@ -13,6 +13,7 @@
 
   let { family, paused = false }: Props = $props()
   let failed = $state(false)
+  let ready = $state(false)
 
   const attachRenderer: Attachment<HTMLCanvasElement> = (canvas) => {
     let renderer = $state.raw<SignalRenderer | undefined>(undefined)
@@ -30,7 +31,13 @@
 
         try {
           renderer = untrack(() =>
-            createSignalRenderer(canvas, { family, paused }),
+            createSignalRenderer(canvas, { family, paused }, {
+              onready: () => {
+                if (!disposed) {
+                  ready = true
+                }
+              },
+            }),
           )
         } catch {
           failed = true
@@ -52,6 +59,7 @@
 
 <div class="signal-field">
   <canvas
+    class:ready
     {@attach attachRenderer}
     aria-hidden="true"
   ></canvas>
@@ -72,6 +80,22 @@
 
   canvas {
     display: block;
+    opacity: 0;
+  }
+
+  canvas.ready {
+    opacity: 1;
+    animation: signal-enter 1000ms ease-out both;
+  }
+
+  @keyframes signal-enter {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
   }
 
   p {
