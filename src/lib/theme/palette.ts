@@ -1,3 +1,20 @@
+export type HexColor = `#${string}`
+
+export const roles = ['surface', 'muted', 'foreground', 'emphasis'] as const
+export type Role = (typeof roles)[number]
+
+interface PaletteFamily extends Readonly<Record<Role, HexColor>> {
+  readonly id: string
+  readonly name: string
+  readonly description: string
+}
+
+export const surfaces = {
+  background: '#161616',
+  working: '#1A1A1A',
+  raised: '#242424',
+} as const satisfies Readonly<Record<string, HexColor>>
+
 export const families = [
   {
     id: 'static',
@@ -71,24 +88,23 @@ export const families = [
     foreground: '#C1BFB3',
     emphasis: '#D9D7CD',
   },
-] as const
+] as const satisfies readonly PaletteFamily[]
 
 export type Family = (typeof families)[number]
 export type FamilyId = Family['id']
-export const roles = ['surface', 'muted', 'foreground', 'emphasis'] as const
-export type Role = (typeof roles)[number]
-
 export const base = {
-  'background': '#161616',
+  'background': surfaces.background,
   'text-primary': '#C1BFB3',
   'text-secondary': '#92918B',
   'text-muted': '#77766D',
 } as const
 
-export const familyById: Readonly<Record<FamilyId, Family>> =
+type FamilyById = { readonly [Item in Family as Item['id']]: Item }
+
+export const familyById =
   Object.fromEntries(
     families.map((family) => [family.id, family]),
-  ) as Record<FamilyId, Family>
+  ) as FamilyById
 
 export const familyIndex: Readonly<Record<FamilyId, number>> =
   Object.fromEntries(
@@ -97,6 +113,7 @@ export const familyIndex: Readonly<Record<FamilyId, number>> =
 
 export const siteStyle = [
   `--page:${base.background}`,
+  `--panel:${surfaces.working}`,
   `--ink:${base['text-primary']}`,
   `--secondary:${base['text-secondary']}`,
   ...families.flatMap((family) =>

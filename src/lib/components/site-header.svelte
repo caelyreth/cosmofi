@@ -1,15 +1,16 @@
 <script lang="ts">
+  import { resolve } from '$app/paths'
   import { page } from '$app/state'
 
   import favicon from '#lib/assets/favicon.svg'
 
-  let home = $derived(page.url.pathname === '/')
-  let reading = $derived(page.url.pathname === '/introduction')
+  const home = $derived(page.route.id === '/')
+  const reading = $derived(page.route.id === '/introduction')
 </script>
 
 <header class:reading>
   <span class="capsule" aria-hidden="true" data-nosnippet></span>
-  <a class="brand" href="/" aria-label="Cosmofi home">
+  <a class="brand" href={resolve('/')} aria-label="Cosmofi home">
     <img
       src={favicon}
       width="32"

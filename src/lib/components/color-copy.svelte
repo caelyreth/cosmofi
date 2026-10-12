@@ -1,24 +1,29 @@
 <script lang="ts">
   import {
-    colorDisplayValue,
-    colorValue,
+    colorRepresentation,
     type ColorFormat,
-  } from '#lib/color'
+  } from '#lib/theme/color'
+  import type { HexColor } from '#lib/theme/palette'
 
   import CopyButton from './copy-button.svelte'
+
+  interface Props {
+    color: HexColor
+    format?: ColorFormat
+    name?: string
+  }
 
   let {
     color,
     format = 'hex',
     name = 'color',
-  }: { color: string; format?: ColorFormat; name?: string } = $props()
+  }: Props = $props()
 
-  const value = $derived(colorValue(color, format))
-  const displayValue = $derived(colorDisplayValue(color, format))
+  const representation = $derived(colorRepresentation(color, format))
 </script>
 
 <CopyButton
-  {value}
-  {displayValue}
+  value={representation.copy}
+  displayValue={representation.display}
   label={`Copy ${name} as ${format.toUpperCase()}`}
 />

@@ -1,80 +1,24 @@
 <script lang="ts">
-  import type { Attachment } from 'svelte/attachments'
-  import { prefersReducedMotion } from 'svelte/motion'
-
   import { rovingFocus } from '#lib/attachments/roving-focus'
   import DirectionalText from '#lib/components/directional-text.svelte'
-  import { base } from '#lib/theme'
+  import { autoCycle } from '#lib/motion/auto-cycle.svelte'
 
-  const surfaces = [
-    { name: 'Background', color: base.background },
-    { name: 'Working surface', color: '#1A1A1A' },
-    { name: 'Raised plane', color: '#242424' },
-  ]
-
-  const separation = 76
+  import { planeSeparation, surfaces } from './surfaces'
 
   let selected = $state(0)
-  let hovered = $state(false)
-  let focused = $state(false)
 
   const surface = $derived(surfaces[selected])
   const channel = $derived(parseInt(surface.color.slice(1, 3), 16))
-
-  const attachCycle: Attachment<HTMLElement> = (element) => {
-    let visible = $state(false)
-    let active = $state(!document.hidden)
-
-    function updateVisibility() {
-      active = !document.hidden
-    }
-
-    $effect(() => {
-      const next = (selected + 1) % surfaces.length
-
-      const stopped = [
-        !visible,
-        !active,
-        hovered,
-        focused,
-        prefersReducedMotion.current,
-      ].some(Boolean)
-
-      if (stopped) {
-        return
-      }
-
-      const timer = setTimeout(() => (selected = next), 4500)
-
-      return () => clearTimeout(timer)
-    })
-
-    const observer = new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting
-    })
-
-    observer.observe(element)
-    document.addEventListener('visibilitychange', updateVisibility)
-
-    return () => {
-      observer.disconnect()
-      document.removeEventListener('visibilitychange', updateVisibility)
-    }
-  }
+  const cycle = autoCycle({
+    interval: 4500,
+    value: () => selected,
+    advance: (index) => {
+      selected = (index + 1) % surfaces.length
+    },
+  })
 </script>
 
-<figure
-  class="surface-study"
-  {@attach attachCycle}
-  onpointerenter={() => (hovered = true)}
-  onpointerleave={() => (hovered = false)}
-  onfocusin={() => (focused = true)}
-  onfocusout={(event) => {
-    focused =
-      event.relatedTarget instanceof Node &&
-      event.currentTarget.contains(event.relatedTarget)
-  }}
->
+<figure class="surface-study" {@attach cycle}>
   <figcaption class="figure-heading instrument-label">
     <span>Surface composition</span>
     <span>R = G = B</span>
@@ -83,7 +27,7 @@
   <div class="surface-layout">
     <div
       class="neutral-composition"
-      style:--separation={`${separation * 0.45}px`}
+      style:--separation={`${planeSeparation * 0.45}px`}
       aria-hidden="true"
       data-nosnippet
     >

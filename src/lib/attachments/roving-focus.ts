@@ -11,7 +11,14 @@ const navigationKeys = new Set([
 
 export const rovingFocus: Attachment<HTMLElement> = (element) => {
   function navigate(event: KeyboardEvent) {
-    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
+    if (
+      event.defaultPrevented ||
+      event.isComposing ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.shiftKey
+    ) {
       return
     }
 

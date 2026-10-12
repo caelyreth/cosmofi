@@ -1,73 +1,15 @@
 <script lang="ts">
   import { rovingFocus } from '#lib/attachments/roving-focus'
-  import { colorHue } from '#lib/color'
-  import { families, familyById, type FamilyId } from '#lib/theme'
+  import { colorHue } from '#lib/theme/color'
+  import { familyById, type FamilyId } from '#lib/theme/palette'
+
+  import { omittedArc, point, segments } from './hue-wheel'
 
   let selected = $state<FamilyId>('halo')
-
-  const hueFamilies = families
-    .filter((family) => family.id !== 'static' && family.id !== 'moonveil')
-    .map((family) => ({ ...family, hue: colorHue(family.foreground) }))
-    .sort((a, b) => a.hue - b.hue)
-
-  const segments = hueFamilies.map((family, index) => {
-    const previousIndex = (index + hueFamilies.length - 1) % hueFamilies.length
-    const previous = hueFamilies[previousIndex]
-    const next = hueFamilies[(index + 1) % hueFamilies.length]
-    const previousHue = previous.hue - (index === 0 ? 360 : 0)
-    const nextHue = next.hue + (index === hueFamilies.length - 1 ? 360 : 0)
-    let start = (previousHue + family.hue) / 2
-    let end = (family.hue + nextHue) / 2
-
-    if (start > 190 && start < 275) {
-      start = 275
-    }
-
-    if (end > 190 && end < 275) {
-      end = 190
-    }
-
-    return {
-      ...family,
-      start: start + 1,
-      length: end - start - 2,
-      hitArea: sector(start, end),
-    }
-  })
 
   const family = $derived(familyById[selected])
   const hue = $derived(colorHue(family.foreground))
   const marker = $derived(point(hue, 125))
-
-  function point(angle: number, radius: number) {
-    const radians = (angle - 90) * Math.PI / 180
-
-    return {
-      x: 170 + Math.cos(radians) * radius,
-      y: 170 + Math.sin(radians) * radius,
-    }
-  }
-
-  function sector(start: number, end: number) {
-    const steps = Math.ceil((end - start) / 6)
-    const angles = Array.from(
-      { length: steps + 1 },
-      (_, index) => start + (end - start) * index / steps,
-    )
-    const points = [
-      ...angles.map((angle) => point(angle, 151)),
-      ...angles.toReversed().map((angle) => point(angle, 99)),
-    ]
-    const coordinates = points.map(
-      ({ x, y }) => `${x / 340 * 100}% ${y / 340 * 100}%`,
-    )
-
-    return `polygon(${coordinates.join(', ')})`
-  }
-
-  const omittedStart = point(190, 125)
-  const omittedEnd = point(275, 125)
-  const omittedArc = `M ${omittedStart.x} ${omittedStart.y} A 125 125 0 0 1 ${omittedEnd.x} ${omittedEnd.y}`
 </script>
 
 <figure class="hue-study">

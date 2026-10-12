@@ -1,97 +1,21 @@
 <script lang="ts">
   import '../app.css'
-  import { onNavigate, type OnNavigate } from '$app/navigation'
-  import { prefersReducedMotion } from 'svelte/motion'
 
   import favicon from '#lib/assets/favicon.svg'
   import SiteHeader from '#lib/components/site-header.svelte'
-  import {
-    Presentation,
-    setPresentation,
-  } from '#lib/presentation.svelte'
-  import { siteStyle } from '#lib/theme'
+  import { registerRouteTransitions } from '#lib/navigation/transitions'
+  import { providePaletteSelection } from '#lib/state/palette.svelte'
+  import { paletteKeyboard } from '#lib/state/palette-keyboard'
+  import { base, siteStyle } from '#lib/theme/palette'
 
   import type { LayoutProps } from './$types'
 
   let { children }: LayoutProps = $props()
-  const presentation = new Presentation()
-  setPresentation(presentation)
 
-  let transition: ViewTransition | undefined
+  const palette = providePaletteSelection()
+  const tune = paletteKeyboard(palette)
 
-  function transitionDirection(navigation: OnNavigate) {
-    return navigation.to?.url.pathname === '/' ? 'back' : 'forward'
-  }
-
-  function finishTransition(
-    nextTransition: ViewTransition,
-    resolve: () => void,
-  ) {
-    if (transition === nextTransition) {
-      transition = undefined
-      delete document.documentElement.dataset.routeTransition
-    }
-
-    resolve()
-  }
-
-  onNavigate((navigation) => {
-    const skip = [
-      !document.startViewTransition,
-      prefersReducedMotion.current,
-      navigation.from?.url.pathname === navigation.to?.url.pathname,
-    ].some(Boolean)
-
-    if (skip) {
-      return
-    }
-
-    document.documentElement.dataset.routeTransition =
-      transitionDirection(navigation)
-    transition?.skipTransition()
-
-    return new Promise<void>((resolve) => {
-      const nextTransition = document.startViewTransition(async () => {
-        resolve()
-        await navigation.complete
-      })
-      transition = nextTransition
-
-      // Snapshot failures must never prevent navigation from completing.
-      void nextTransition.finished.then(
-        () => finishTransition(nextTransition, resolve),
-        () => finishTransition(nextTransition, resolve),
-      )
-    })
-  })
-
-  function isEditing(target: EventTarget | null) {
-    if (!(target instanceof HTMLElement)) {
-      return false
-    }
-
-    return (
-      target.matches('input, textarea, select, button') ||
-      target.isContentEditable
-    )
-  }
-
-  function tune(event: KeyboardEvent) {
-    const modified = [
-      event.defaultPrevented,
-      event.metaKey,
-      event.ctrlKey,
-      event.altKey,
-    ].some(Boolean)
-
-    if (modified || isEditing(event.target)) {
-      return
-    }
-
-    if (/^[1-8]$/.test(event.key)) {
-      presentation.channel = Number(event.key) - 1
-    }
-  }
+  registerRouteTransitions()
 </script>
 
 <svelte:window onkeydown={tune} />
@@ -105,14 +29,13 @@
     type="font/woff2"
     crossorigin="anonymous"
   />
-  <meta name="theme-color" content="#161616" />
+  <meta name="theme-color" content={base.background} />
 </svelte:head>
 
 <div
   class="site"
   style={siteStyle}
-  style:--channel={presentation.family.foreground}
-  style:--channel-surface={presentation.family.surface}
+  style:--channel={palette.family.foreground}
 >
   <a class="skip-link" href="#main">Skip to content</a>
   <SiteHeader />
@@ -128,6 +51,7 @@
     height: 100%;
     view-transition-name: route-content;
   }
+
   .skip-link {
     position: fixed;
     top: 12px;
@@ -138,6 +62,7 @@
     color: var(--page);
     transform: translateY(-150%);
   }
+
   .skip-link:focus {
     transform: translateY(0);
   }

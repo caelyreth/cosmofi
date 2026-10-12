@@ -1,48 +1,19 @@
 <script lang="ts">
   import { Check, CircleAlert, Copy, LoaderCircle } from 'lucide-svelte'
 
-  let {
-    value,
-    displayValue = value,
-    label,
-  }: { value: string; displayValue?: string; label?: string } = $props()
-  let state = $state<'idle' | 'copying' | 'copied' | 'error'>('idle')
-  let previousValue = ''
+  import { createClipboard } from '#lib/state/clipboard.svelte'
 
-  $effect(() => {
-    if (previousValue === value) {
-      return
-    }
-
-    previousValue = value
-    state = 'idle'
-  })
-
-  $effect(() => {
-    if (state !== 'copied' && state !== 'error') {
-      return
-    }
-
-    const timer = setTimeout(() => (state = 'idle'), 2400)
-    return () => clearTimeout(timer)
-  })
-
-  async function copy() {
-    const copiedValue = value
-    state = 'copying'
-
-    try {
-      await navigator.clipboard.writeText(copiedValue)
-
-      if (value === copiedValue) {
-        state = 'copied'
-      }
-    } catch {
-      if (value === copiedValue) {
-        state = 'error'
-      }
-    }
+  interface Props {
+    value: string
+    displayValue?: string
+    label?: string
   }
+
+  let { value, displayValue, label }: Props = $props()
+
+  const clipboard = createClipboard(() => value)
+  const state = $derived(clipboard.status)
+  const displayed = $derived(displayValue ?? value)
 </script>
 
 <span class="color-copy">
@@ -51,7 +22,7 @@
     class="copy-button"
     class:copied={state === 'copied'}
     class:error={state === 'error'}
-    onclick={copy}
+    onclick={clipboard.copy}
     disabled={state === 'copying'}
     aria-label={label ?? `Copy ${value}`}
     title={state === 'copied'
@@ -60,7 +31,7 @@
         ? 'Clipboard unavailable'
         : (label ?? `Copy ${value}`)}
   >
-    <span class="copy-value mono">{displayValue}</span>
+    <span class="copy-value mono">{displayed}</span>
     <span class="copy-icon" aria-hidden="true">
       {#if state === 'copied'}
         <Check size={14} />

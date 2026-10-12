@@ -26,9 +26,11 @@
   .left {
     rotate: 180deg;
   }
+
   .up {
     rotate: -90deg;
   }
+
   .down {
     rotate: 90deg;
   }

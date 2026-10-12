@@ -1,9 +1,9 @@
 <script lang="ts">
   import { overflowFocus } from '#lib/attachments/overflow-focus'
-  import SpectrumRegister from '#lib/components/spectrum-register.svelte'
-  import { getPresentation } from '#lib/presentation.svelte'
+  import SpectrumRegister from '#lib/spectrum/spectrum-register.svelte'
+  import { getPaletteSelection } from '#lib/state/palette.svelte'
 
-  const presentation = getPresentation()
+  const palette = getPaletteSelection()
 </script>
 
 <svelte:head>
@@ -33,9 +33,9 @@
     </div>
 
     <SpectrumRegister
-      family={presentation.family}
-      direction={presentation.direction}
-      onselect={(id) => presentation.select(id)}
+      family={palette.family}
+      direction={palette.direction}
+      onselect={palette.select}
     />
   </div>
 </main>
@@ -87,6 +87,7 @@
     h1 {
       font-size: var(--text-heading);
     }
+
     .section-heading {
       gap: 24px;
       margin-bottom: 20px;

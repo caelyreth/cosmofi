@@ -3,22 +3,25 @@
 
   import { overflowFocus } from '#lib/attachments/overflow-focus'
   import { rovingFocus } from '#lib/attachments/roving-focus'
-  import type { CodeExample, LanguageId } from '#lib/syntax'
+
+  import { languages, type CodeExamples, type LanguageId } from './code'
+
+  interface Props {
+    examples: CodeExamples
+    language?: LanguageId
+  }
 
   let {
     examples,
     language = $bindable<LanguageId>('ts'),
-  }: {
-    examples: CodeExample[]
-    language?: LanguageId
-  } = $props()
+  }: Props = $props()
 
-  const selected = $derived(
-    examples.find((example) => example.id === language) ?? examples[0],
-  )
+  const id = $props.id()
+  const panelId = `${id}-panel`
+  const selected = $derived(examples[language])
 
   const attachCodeAccessibility: Attachment<HTMLDivElement> = (element) => {
-    const gutter = element.querySelector('.shj-multiline > div > div:first-child')
+    const gutter = element.querySelector('.shj-numbers')
 
     gutter?.setAttribute('aria-hidden', 'true')
     gutter?.setAttribute('data-nosnippet', '')
@@ -33,13 +36,13 @@
       aria-label="Example language"
       {@attach rovingFocus}
     >
-      {#each examples as example (example.id)}
+      {#each languages as example (example.id)}
         <button
           type="button"
-          id={`source-tab-${example.id}`}
+          id={`${id}-${example.id}`}
           role="tab"
           aria-selected={selected.id === example.id}
-          aria-controls="code-example-panel"
+          aria-controls={panelId}
           aria-label={`${example.label}: ${example.name}`}
           tabindex={selected.id === example.id ? 0 : -1}
           onclick={() => (language = example.id)}
@@ -53,11 +56,11 @@
 
   {#key selected.id}
     <div
-      id="code-example-panel"
+      id={panelId}
       class="code-scroll"
       tabindex="-1"
       role="tabpanel"
-      aria-labelledby={`source-tab-${selected.id}`}
+      aria-labelledby={`${id}-${selected.id}`}
       {@attach overflowFocus}
       {@attach attachCodeAccessibility}
     >

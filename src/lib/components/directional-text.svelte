@@ -3,7 +3,14 @@
   import { prefersReducedMotion } from 'svelte/motion'
   import { fly } from 'svelte/transition'
 
-  let { value, direction }: { value: string; direction: -1 | 1 } = $props()
+  import type { Direction } from '#lib/motion/direction'
+
+  interface Props {
+    value: string
+    direction: Direction
+  }
+
+  let { value, direction }: Props = $props()
 
   const motion = (side: number) => ({
     x: side * 20,

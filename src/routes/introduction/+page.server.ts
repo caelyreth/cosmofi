@@ -1,5 +1,7 @@
-import { codeExamples } from '#lib/server/code-examples'
+import { codeExamples } from '#lib/server/highlighting/examples'
 
-export function load() {
+import type { PageServerLoad } from './$types'
+
+export const load = (() => {
   return { examples: codeExamples }
-}
+}) satisfies PageServerLoad

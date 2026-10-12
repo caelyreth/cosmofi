@@ -1,14 +1,15 @@
 <script lang="ts">
   import { snapshot } from '$app/navigation'
 
-  import CodeSpecimen from '#lib/components/code-specimen.svelte'
-  import HueStudy from '#lib/components/hue-study.svelte'
-  import SurfaceStudy from '#lib/components/surface-study.svelte'
+  import CodeSpecimen from '#lib/introduction/code-specimen.svelte'
+  import HueStudy from '#lib/introduction/hue-study.svelte'
+  import StoryChapter from '#lib/introduction/story-chapter.svelte'
+  import SurfaceStudy from '#lib/introduction/surface-study.svelte'
+  import type { LanguageId } from '#lib/introduction/code'
   import {
     syntaxColors,
     syntaxRoles,
-    type LanguageId,
-  } from '#lib/syntax'
+  } from '#lib/introduction/syntax'
 
   import type { PageProps } from './$types'
 
@@ -52,125 +53,113 @@
   tabindex="-1"
   aria-labelledby="introduction-title"
 >
-  <section class="chapter split-screen" aria-labelledby="introduction-title">
-    <div class="chapter-copy">
-      <div class="chapter-writing">
-        <span class="chapter-number instrument-label">01 / Color choices</span>
+  <StoryChapter labelledBy="introduction-title" first>
+    {#snippet copy()}
+      <span class="chapter-number instrument-label">01 / Color choices</span>
 
-        <div class="chapter-heading">
-          <h1 id="introduction-title">A quieter<br />color range.</h1>
-          <p>
-            Cyan and blue are deliberately absent. Softened violet, rose,
-            green, and earth tones leave a clear gap in the hue circle,
-            keeping the palette restrained during long reading sessions.
-          </p>
+      <div class="chapter-heading">
+        <h1 id="introduction-title">A quieter<br />color range.</h1>
+        <p>
+          Cyan and blue are deliberately absent. Softened violet, rose,
+          green, and earth tones leave a clear gap in the hue circle,
+          keeping the palette restrained during long reading sessions.
+        </p>
+      </div>
+
+      <dl class="principles">
+        <div>
+          <dt>Less competition</dt>
+          <dd>
+            Fewer hue families compete for attention. Color separates
+            meaningful details instead of filling every part of the view.
+          </dd>
         </div>
-
-        <dl class="principles">
-          <div>
-            <dt>Less competition</dt>
-            <dd>
-              Fewer hue families compete for attention. Color separates
-              meaningful details instead of filling every part of the view.
-            </dd>
-          </div>
-          <div>
-            <dt>Accents and neutrals</dt>
-            <dd>
-              Six chromatic accents carry structure. Static and Moonveil
-              provide the quiet neutral range around them.
-            </dd>
-          </div>
-        </dl>
-      </div>
-    </div>
-
-    <div class="chapter-visual">
-      <div class="visual-content">
-        <HueStudy />
-      </div>
-    </div>
-  </section>
-
-  <section class="chapter split-screen" aria-labelledby="surface-title">
-    <div class="chapter-copy">
-      <div class="chapter-writing">
-        <span class="chapter-number instrument-label">02 / Surfaces</span>
-
-        <div class="chapter-heading">
-          <h2 id="surface-title">Pure grayscale<br />surfaces.</h2>
-          <p>
-            Equal red, green, and blue values keep the interface neutral.
-            Depth comes from brightness and spacing, while the surrounding
-            field leaves the color of your content alone.
-          </p>
+        <div>
+          <dt>Accents and neutrals</dt>
+          <dd>
+            Six chromatic accents carry structure. Static and Moonveil
+            provide the quiet neutral range around them.
+          </dd>
         </div>
+      </dl>
+    {/snippet}
 
-        <dl class="principles">
-          <div>
-            <dt>No color cast</dt>
-            <dd>
-              Neither warm nor cool. Every accent sits on the same
-              unbiased field, without a tinted surface shifting its
-              appearance.
-            </dd>
-          </div>
-          <div>
-            <dt>Depth through brightness</dt>
-            <dd>
-              Small changes in lightness distinguish the background,
-              working surface, and raised planes. The RGB channels remain
-              equal at every level.
-            </dd>
-          </div>
-        </dl>
+    {#snippet visual()}
+      <HueStudy />
+    {/snippet}
+  </StoryChapter>
+
+  <StoryChapter labelledBy="surface-title">
+    {#snippet copy()}
+      <span class="chapter-number instrument-label">02 / Surfaces</span>
+
+      <div class="chapter-heading">
+        <h2 id="surface-title">Pure grayscale<br />surfaces.</h2>
+        <p>
+          Equal red, green, and blue values keep the interface neutral.
+          Depth comes from brightness and spacing, while the surrounding
+          field leaves the color of your content alone.
+        </p>
       </div>
-    </div>
 
-    <div class="chapter-visual">
-      <div class="visual-content">
-        <SurfaceStudy />
-      </div>
-    </div>
-  </section>
-
-  <section class="chapter split-screen" aria-labelledby="syntax-title">
-    <div class="chapter-copy">
-      <div class="chapter-writing">
-        <span class="chapter-number instrument-label">03 / In use</span>
-
-        <div class="chapter-heading">
-          <h2 id="syntax-title">Structure<br />at a glance.</h2>
-          <p>
-            Punctuation stays muted and variables use the normal
-            foreground. Color marks the role of a word, keeping the same
-            visual hierarchy across four languages.
-          </p>
+      <dl class="principles">
+        <div>
+          <dt>No color cast</dt>
+          <dd>
+            Neither warm nor cool. Every accent sits on the same
+            unbiased field, without a tinted surface shifting its
+            appearance.
+          </dd>
         </div>
+        <div>
+          <dt>Depth through brightness</dt>
+          <dd>
+            Small changes in lightness distinguish the background,
+            working surface, and raised planes. The RGB channels remain
+            equal at every level.
+          </dd>
+        </div>
+      </dl>
+    {/snippet}
 
-        <dl class="syntax-legend">
-          {#each syntaxRoles as role (role.id)}
-            <div>
-              <dt>
-                <i
-                  style:background={syntaxColors[role.id]}
-                  aria-hidden="true"
-                ></i>
-                <span>{role.label}</span>
-              </dt>
-              <dd style:color={syntaxColors[role.id]}>{role.family}</dd>
-            </div>
-          {/each}
-        </dl>
-      </div>
-    </div>
+    {#snippet visual()}
+      <SurfaceStudy />
+    {/snippet}
+  </StoryChapter>
 
-    <div class="chapter-visual">
-      <div class="visual-content code-content">
-        <CodeSpecimen examples={data.examples} bind:language />
+  <StoryChapter labelledBy="syntax-title" code>
+    {#snippet copy()}
+      <span class="chapter-number instrument-label">03 / In use</span>
+
+      <div class="chapter-heading">
+        <h2 id="syntax-title">Structure<br />at a glance.</h2>
+        <p>
+          Punctuation stays muted and variables use the normal
+          foreground. Color marks the role of a word, keeping the same
+          visual hierarchy across four languages.
+        </p>
       </div>
-    </div>
-  </section>
+
+      <dl class="syntax-legend">
+        {#each syntaxRoles as role (role.id)}
+          <div>
+            <dt>
+              <i
+                style:background={syntaxColors[role.id]}
+                aria-hidden="true"
+              ></i>
+              <span>{role.label}</span>
+            </dt>
+            <dd style:color={syntaxColors[role.id]}>{role.family}</dd>
+          </div>
+        {/each}
+      </dl>
+    {/snippet}
+
+    {#snippet visual()}
+      <CodeSpecimen examples={data.examples} bind:language />
+    {/snippet}
+  </StoryChapter>
 </main>
 
 <style>
@@ -178,53 +167,6 @@
     position: relative;
     overflow-x: hidden;
     background: var(--page);
-  }
-
-  .chapter {
-    min-height: 100%;
-    border-bottom: 1px solid #2D2D2D;
-  }
-
-  .chapter:last-child {
-    border-bottom: 0;
-  }
-
-  .chapter-copy,
-  .chapter-visual {
-    display: flex;
-    align-items: center;
-    min-width: 0;
-    padding: var(--content-top) var(--page-inset) var(--content-bottom);
-  }
-
-  .chapter-copy {
-    background: var(--page);
-  }
-
-  .chapter-visual {
-    background: var(--panel);
-  }
-
-  .chapter-writing,
-  .visual-content {
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
-    width: 100%;
-    min-width: 0;
-    margin: 0 auto;
-  }
-
-  .chapter-writing {
-    max-width: 440px;
-  }
-
-  .visual-content {
-    max-width: 720px;
-  }
-
-  .code-content {
-    max-width: 780px;
   }
 
   .chapter-number {
@@ -311,60 +253,8 @@
   }
 
   @media (max-width: 700px) {
-    .chapter {
-      grid-template-columns: minmax(0, 1fr);
-      min-height: auto;
-    }
-
-    .chapter-copy {
-      padding-bottom: 32px;
-    }
-
-    .chapter:not(:first-child) .chapter-copy {
-      padding-top: 36px;
-    }
-
-    .chapter-visual {
-      padding-top: 28px;
-      padding-bottom: 36px;
-    }
-
-    .chapter-writing,
-    .visual-content {
-      max-width: 540px;
-      gap: 24px;
-    }
-
     .chapter-heading p {
       margin-top: 20px;
-    }
-  }
-
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      .chapter {
-        view-timeline-name: --chapter;
-        view-timeline-axis: block;
-      }
-
-      .chapter:not(:first-child) .chapter-writing,
-      .chapter:not(:first-child) .visual-content {
-        animation: chapter-enter linear both;
-        animation-timeline: --chapter;
-        animation-range: entry 0% entry 85%;
-      }
-    }
-  }
-
-  @keyframes chapter-enter {
-    from {
-      opacity: 0.45;
-      transform: translateY(20px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
     }
   }
 </style>

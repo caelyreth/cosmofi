@@ -1,10 +1,16 @@
 <script lang="ts">
   import { rovingFocus } from '#lib/attachments/roving-focus'
-  import { getPresentation } from '#lib/presentation.svelte'
-  import { families } from '#lib/theme'
+  import { families, type FamilyId } from '#lib/theme/palette'
 
-  let { label = 'Color family' }: { label?: string } = $props()
-  const presentation = getPresentation()
+  interface Props {
+    value?: FamilyId
+    label?: string
+  }
+
+  let {
+    value = $bindable<FamilyId>('halo'),
+    label = 'Color family',
+  }: Props = $props()
 </script>
 
 <div class="family-selector" role="group" aria-label={label} {@attach rovingFocus}>
@@ -13,10 +19,10 @@
       type="button"
       aria-label={`Tune ${family.name}`}
       title={`Tune ${family.name}`}
-      aria-pressed={presentation.family.id === family.id}
-      tabindex={presentation.family.id === family.id ? 0 : -1}
+      aria-pressed={value === family.id}
+      tabindex={value === family.id ? 0 : -1}
       style:--swatch={family.foreground}
-      onclick={() => presentation.select(family.id)}
+      onclick={() => (value = family.id)}
     >
       <span class="swatch" aria-hidden="true"></span>
       <span>{family.name}</span>
