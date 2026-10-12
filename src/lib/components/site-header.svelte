@@ -8,6 +8,7 @@
 </script>
 
 <header class:reading>
+  <span class="capsule" aria-hidden="true" data-nosnippet></span>
   <a class="brand" href="/" aria-label="Cosmofi home">
     <img
       src={favicon}
@@ -29,6 +30,7 @@
     top: var(--header-top);
     left: var(--page-inset);
     z-index: 40;
+    isolation: isolate;
     display: inline-flex;
     align-items: center;
     width: max-content;
@@ -36,32 +38,40 @@
     color: var(--ink);
   }
 
-  .reading {
-    isolation: isolate;
+  .capsule {
+    position: absolute;
+    inset: -4px 0;
+    z-index: -1;
+    border-radius: 999px;
+    background: var(--panel);
+    opacity: 0;
+    transform: scaleX(0.85);
+    transform-origin: left center;
+    transition:
+      opacity 240ms ease,
+      transform 380ms cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
   }
 
-  .reading::before {
-    position: absolute;
-    top: calc(-1 * var(--header-top));
-    bottom: -28px;
-    left: calc(-1 * var(--page-inset));
-    z-index: -1;
-    width: 40vw;
-    background: rgb(22 22 22 / 45%);
-    -webkit-backdrop-filter: blur(16px);
-    backdrop-filter: blur(16px);
-    -webkit-mask-image: linear-gradient(
-      to bottom,
-      #000 calc(100% - 28px),
-      transparent
-    );
-    mask-image: linear-gradient(
-      to bottom,
-      #000 calc(100% - 28px),
-      transparent
-    );
-    pointer-events: none;
-    content: '';
+  .reading .capsule {
+    opacity: 1;
+    transform: scaleX(1);
+    view-transition-name: cosmofi-capsule;
+  }
+
+  :global(:root[data-route-transition]) .capsule {
+    transition: none;
+  }
+
+  @starting-style {
+    .reading .capsule {
+      opacity: 0;
+      transform: scaleX(0.85);
+    }
+  }
+
+  .reading .brand {
+    padding-inline: 20px;
   }
 
   .brand {
@@ -83,11 +93,5 @@
     font: 600 var(--text-title)/0.88 var(--font-brand);
     font-optical-sizing: none;
     view-transition-name: cosmofi-wordmark;
-  }
-
-  @media (max-width: 700px) {
-    .reading::before {
-      width: 100vw;
-    }
   }
 </style>

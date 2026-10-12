@@ -214,9 +214,41 @@ a svg {
   animation: none;
 }
 
+/* Snapshot layers have their own stack, separate from the live header. */
+:root::view-transition-group(root) {
+  z-index: 0;
+}
+
+:root::view-transition-group(route-content) {
+  z-index: 1;
+}
+
+:root::view-transition-group(cosmofi-icon),
+:root::view-transition-group(cosmofi-wordmark) {
+  z-index: 3;
+}
+
 :root::view-transition-group(cosmofi-wordmark) {
   animation-duration: 550ms;
   animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root::view-transition-group(cosmofi-capsule) {
+  z-index: 2;
+  animation-duration: 380ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root::view-transition-old(cosmofi-capsule) {
+  transform-origin: left center;
+  animation: capsule-leave 240ms ease-out both;
+  mix-blend-mode: normal;
+}
+
+:root::view-transition-new(cosmofi-capsule) {
+  transform-origin: left center;
+  animation: capsule-enter 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  mix-blend-mode: normal;
 }
 
 :root::view-transition-old(cosmofi-icon),
@@ -251,6 +283,25 @@ a svg {
 @keyframes route-leave {
   to {
     opacity: 0;
+  }
+}
+
+@keyframes capsule-enter {
+  from {
+    opacity: 0;
+    transform: scaleX(0.85);
+  }
+
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes capsule-leave {
+  to {
+    opacity: 0;
+    transform: scaleX(0.85);
   }
 }
 
