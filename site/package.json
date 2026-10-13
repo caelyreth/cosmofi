@@ -1,0 +1,32 @@
+{
+  "name": "site",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#lib/*": "./src/lib/*"
+  },
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "prepare": "svelte-kit sync || echo ''",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+  },
+  "dependencies": {
+    "cosmofi-starfield": "workspace:*",
+    "culori": "^4.0.2",
+    "lucide-svelte": "^1.0.1",
+    "rangi": "^2.2.0"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-auto": "^8.0.0",
+    "@sveltejs/kit": "^3.0.0",
+    "@sveltejs/vite-plugin-svelte": "^7.2.0",
+    "@types/culori": "^4.0.1",
+    "svelte": "^5.57.1",
+    "svelte-check": "^4.6.0",
+    "typescript": "npm:typescript-native-bridge@6.0.3-bridge.18.tsgo.7.0.2",
+    "vite": "^8.3.0"
+  }
+}
