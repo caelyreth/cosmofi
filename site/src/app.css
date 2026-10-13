@@ -1,5 +1,6 @@
 @import './lib/styles/fonts.css';
 @import './lib/styles/transitions.css';
+@import './lib/styles/theme-motion.css';
 
 * {
   box-sizing: border-box;
@@ -18,7 +19,6 @@ html {
   height: 100%;
   overflow: hidden;
   background: #161616;
-  color-scheme: dark;
 }
 
 body {
@@ -28,6 +28,7 @@ body {
   font-family: var(--font-body);
   font-size: var(--text-body);
   -webkit-font-smoothing: antialiased;
+  transition: background-color 640ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 button,
@@ -101,13 +102,13 @@ select:focus-visible,
 }
 
 ::selection {
-  background: #58566f;
-  color: #d9d7cd;
+  background: var(--halo-muted, #58566f);
+  color: var(--moonveil-emphasis, #d9d7cd);
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #545450 transparent;
+  scrollbar-color: var(--track, #545450) transparent;
 }
 
 input {
@@ -145,6 +146,7 @@ a svg {
 
 .site {
   --edge-inset: 24px;
+  scrollbar-gutter: stable;
   --header-top: max(var(--edge-inset), env(safe-area-inset-top));
   --header-bottom: calc(var(--header-top) + 44px);
   --content-top: calc(var(--header-bottom) + var(--edge-inset));
@@ -157,6 +159,23 @@ a svg {
   overflow: hidden;
   display: grid;
   grid-template-rows: minmax(0, 1fr);
+  transition-duration: 640ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  transition-property:
+    --page, --panel, --raised, --ink, --secondary, --muted, --line, --guide,
+    --track, --channel, --syntax-punctuation, --syntax-variable,
+    --syntax-keyword, --syntax-function, --syntax-string, --syntax-constant,
+    --syntax-type, --syntax-number, --syntax-comment, --static-surface,
+    --static-muted, --static-foreground, --static-emphasis, --halo-surface,
+    --halo-muted, --halo-foreground, --halo-emphasis, --afterglow-surface,
+    --afterglow-muted, --afterglow-foreground, --afterglow-emphasis,
+    --remnant-surface, --remnant-muted, --remnant-foreground,
+    --remnant-emphasis, --unripe-surface, --unripe-muted,
+    --unripe-foreground, --unripe-emphasis, --life-surface, --life-muted,
+    --life-foreground, --life-emphasis, --regolith-surface,
+    --regolith-muted, --regolith-foreground, --regolith-emphasis,
+    --moonveil-surface, --moonveil-muted, --moonveil-foreground,
+    --moonveil-emphasis;
 }
 
 .screen {
@@ -176,7 +195,6 @@ a svg {
   min-height: 0;
   overflow: auto;
   overscroll-behavior: contain;
-  scrollbar-gutter: stable;
 }
 
 .frame {

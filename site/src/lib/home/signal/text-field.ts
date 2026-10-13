@@ -1,12 +1,15 @@
-import { familyById } from 'cosmofi'
-
-import { rgbChannels } from '#lib/theme/color'
-
 import {
   createLayer,
   type CanvasLayer,
   type SignalViewport,
 } from './canvas'
+
+export interface SignalAccents {
+  readonly keyword: string
+  readonly type: string
+  readonly string: string
+  readonly neutral: string
+}
 
 interface FragmentImage {
   readonly base: CanvasLayer
@@ -21,41 +24,37 @@ interface Highlight {
   readonly hold: number
 }
 
-function colorInk(color: Parameters<typeof rgbChannels>[0]) {
-  return rgbChannels(color).join(',')
-}
-
-const keyword = colorInk(familyById.remnant.foreground)
-const typeInk = colorInk(familyById.regolith.foreground)
-const stringInk = colorInk(familyById.unripe.foreground)
-const neutral = colorInk(familyById.static.foreground)
+type GlyphRole = 'keyword' | 'type' | 'string' | 'neutral' | 'accent'
 
 const fragments = [
   [
-    { text: 'const ', ink: keyword },
-    { text: 'atmosphere', ink: null },
-    { text: " = 'cosmofi';", ink: stringInk },
+    { text: 'const ', role: 'keyword' },
+    { text: 'atmosphere', role: 'accent' },
+    { text: " = 'cosmofi';", role: 'string' },
   ],
   [
-    { text: 'signal.', ink: neutral },
-    { text: 'receive', ink: null },
-    { text: '({ color: palette });', ink: neutral },
+    { text: 'signal.', role: 'neutral' },
+    { text: 'receive', role: 'accent' },
+    { text: '({ color: palette });', role: 'neutral' },
   ],
   [
-    { text: 'type ', ink: keyword },
-    { text: 'Frequency', ink: typeInk },
-    { text: " = 'quiet' | 'cosmic';", ink: stringInk },
+    { text: 'type ', role: 'keyword' },
+    { text: 'Frequency', role: 'type' },
+    { text: " = 'quiet' | 'cosmic';", role: 'string' },
   ],
   [
-    { text: 'return ', ink: keyword },
-    { text: '{ background, foreground };', ink: neutral },
+    { text: 'return ', role: 'keyword' },
+    { text: '{ background, foreground };', role: 'neutral' },
   ],
   [
-    { text: 'export const ', ink: keyword },
-    { text: 'starfield', ink: null },
-    { text: ' = { ...colors };', ink: neutral },
+    { text: 'export const ', role: 'keyword' },
+    { text: 'starfield', role: 'accent' },
+    { text: ' = { ...colors };', role: 'neutral' },
   ],
-] as const
+] as const satisfies readonly (readonly {
+  readonly text: string
+  readonly role: GlyphRole
+}[])[]
 
 const attack = 0.24
 const release = 0.65
@@ -66,7 +65,12 @@ function smoothstep(progress: number) {
   return value * value * (3 - 2 * value)
 }
 
-export function createTextField(context: CanvasRenderingContext2D) {
+export function createTextField(
+  context: CanvasRenderingContext2D,
+  initial: SignalAccents,
+) {
+  let accents = initial
+  let viewport: SignalViewport | undefined
   let width = 0
   let height = 0
   let columns = 1
@@ -107,9 +111,18 @@ export function createTextField(context: CanvasRenderingContext2D) {
     }
   }
 
-  function resize(viewport: SignalViewport) {
-    width = viewport.width
-    height = viewport.height
+  function setAccents(next: SignalAccents) {
+    accents = next
+
+    if (viewport) {
+      resize(viewport)
+    }
+  }
+
+  function resize(next: SignalViewport) {
+    viewport = next
+    width = next.width
+    height = next.height
     columns = width < 900 ? 1 : 2
     context.font = '12px "Martian Mono", monospace'
 
@@ -127,8 +140,8 @@ export function createTextField(context: CanvasRenderingContext2D) {
     images = fragments.map((fragment, index) => {
       const imageWidth = Math.ceil(fragmentWidths[index] + 2)
       const imageHeight = 24
-      const base = createLayer(imageWidth, imageHeight, viewport.dpr)
-      const accent = createLayer(imageWidth, imageHeight, viewport.dpr)
+      const base = createLayer(imageWidth, imageHeight, next.dpr)
+      const accent = createLayer(imageWidth, imageHeight, next.dpr)
       let cursor = 1
 
       base.context.font = context.font
@@ -137,10 +150,10 @@ export function createTextField(context: CanvasRenderingContext2D) {
       accent.context.textBaseline = 'middle'
 
       fragment.forEach((token, tokenIndex) => {
-        const layer = token.ink === null ? accent : base
+        const glyph = token.role === 'accent' ? null : accents[token.role]
+        const layer = glyph === null ? accent : base
 
-        layer.context.fillStyle =
-          token.ink === null ? '#fff' : `rgb(${token.ink})`
+        layer.context.fillStyle = glyph === null ? '#fff' : `rgb(${glyph})`
         layer.context.fillText(token.text, cursor, imageHeight / 2)
         cursor += tokenWidths[index][tokenIndex]
       })
@@ -148,7 +161,7 @@ export function createTextField(context: CanvasRenderingContext2D) {
       return {
         base,
         accent,
-        image: createLayer(imageWidth, imageHeight, viewport.dpr),
+        image: createLayer(imageWidth, imageHeight, next.dpr),
         width: imageWidth,
         height: imageHeight,
       }
@@ -275,5 +288,5 @@ export function createTextField(context: CanvasRenderingContext2D) {
     context.globalAlpha = 1
   }
 
-  return { resize, setColor, draw }
+  return { resize, setAccents, setColor, draw }
 }

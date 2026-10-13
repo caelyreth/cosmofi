@@ -1,6 +1,7 @@
 :root::view-transition-old(root),
 :root::view-transition-new(root) {
   animation: none;
+  mix-blend-mode: normal;
 }
 
 /* Snapshot layers have their own stack, separate from the live header. */
@@ -13,7 +14,8 @@
 }
 
 :root::view-transition-group(cosmofi-icon),
-:root::view-transition-group(cosmofi-wordmark) {
+:root::view-transition-group(cosmofi-wordmark),
+:root::view-transition-group(cosmofi-theme) {
   z-index: 3;
 }
 
@@ -22,10 +24,23 @@
   animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-:root::view-transition-group(cosmofi-capsule) {
+:root::view-transition-group(cosmofi-capsule),
+:root::view-transition-group(cosmofi-theme-capsule) {
   z-index: 2;
   animation-duration: 380ms;
   animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root::view-transition-old(cosmofi-theme-capsule) {
+  transform-origin: right center;
+  animation: capsule-leave 240ms ease-out both;
+  mix-blend-mode: normal;
+}
+
+:root::view-transition-new(cosmofi-theme-capsule) {
+  transform-origin: right center;
+  animation: capsule-enter 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  mix-blend-mode: normal;
 }
 
 :root::view-transition-old(cosmofi-capsule) {
@@ -41,7 +56,9 @@
 }
 
 :root::view-transition-old(cosmofi-icon),
-:root::view-transition-new(cosmofi-icon) {
+:root::view-transition-new(cosmofi-icon),
+:root::view-transition-old(cosmofi-theme),
+:root::view-transition-new(cosmofi-theme) {
   animation: none;
   mix-blend-mode: normal;
 }

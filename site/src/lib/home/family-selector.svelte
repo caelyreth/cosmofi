@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { families, type FamilyId } from 'cosmofi'
+  import type { FamilyId } from 'cosmofi'
 
   import { rovingFocus } from '#lib/attachments/roving-focus'
+  import { getThemeSelection } from '#lib/state/theme.svelte'
 
   interface Props {
     value?: FamilyId
@@ -12,6 +13,8 @@
     value = $bindable<FamilyId>('halo'),
     label = 'Color family',
   }: Props = $props()
+
+  const appearance = getThemeSelection()
 </script>
 
 <div
@@ -20,7 +23,7 @@
   aria-label={label}
   {@attach rovingFocus}
 >
-  {#each families as family}
+  {#each appearance.theme.families as family}
     <button
       type="button"
       aria-label={`Tune ${family.name}`}

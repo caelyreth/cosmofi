@@ -39,7 +39,7 @@
 <style>
   .chapter {
     min-height: 100%;
-    border-bottom: 1px solid #2d2d2d;
+    border-bottom: 1px solid var(--line);
   }
 
   .chapter:last-child {

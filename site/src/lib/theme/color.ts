@@ -1,4 +1,4 @@
-import { base, familyById, type HexColor } from 'cosmofi'
+import { themes, type HexColor } from 'cosmofi'
 import {
   formatHex,
   formatRgb,
@@ -102,8 +102,8 @@ export function readableInk(hex: HexColor): HexColor {
   let ink = inkCache.get(hex)
 
   if (!ink) {
-    const dark = base.background
-    const light = familyById.moonveil.emphasis
+    const dark = themes.starfield.surfaces.background
+    const light = themes.starfield.familyById.moonveil.emphasis
     const darkContrast = wcagContrast(hex, dark)
     const lightContrast = wcagContrast(hex, light)
     ink = darkContrast >= lightContrast ? dark : light

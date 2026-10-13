@@ -4,39 +4,53 @@
 
   import favicon from '#lib/assets/favicon.svg'
 
+  import ThemeSwitch from './theme-switch.svelte'
+
   const home = $derived(page.route.id === '/')
   const reading = $derived(page.route.id === '/introduction')
 </script>
 
-<header class:reading>
-  <span class="capsule" aria-hidden="true" data-nosnippet></span>
-  <a class="brand" href={resolve('/')} aria-label="Cosmofi home">
-    <img
-      src={favicon}
-      width="32"
-      height="32"
-      alt=""
-      aria-hidden="true"
-      draggable="false"
-    />
-    {#if !home}
-      <span class="wordmark">cosmofi</span>
-    {/if}
-  </a>
+<header>
+  <div class="lockup" class:reading>
+    <span class="capsule" aria-hidden="true" data-nosnippet></span>
+    <a class="brand" href={resolve('/')} aria-label="Cosmofi home">
+      <img
+        src={favicon}
+        width="32"
+        height="32"
+        alt=""
+        aria-hidden="true"
+        draggable="false"
+      />
+      {#if !home}
+        <span class="wordmark">cosmofi</span>
+      {/if}
+    </a>
+  </div>
+  <ThemeSwitch {reading} />
 </header>
 
 <style>
   header {
     position: absolute;
     top: var(--header-top);
+    right: var(--page-inset);
     left: var(--page-inset);
     z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 44px;
+    color: var(--ink);
+  }
+
+  .lockup {
+    position: relative;
     isolation: isolate;
     display: inline-flex;
     align-items: center;
     width: max-content;
     height: 44px;
-    color: var(--ink);
   }
 
   .capsule {
@@ -93,6 +107,9 @@
     width: fit-content;
     font: 600 var(--text-title)/0.88 var(--font-brand);
     font-optical-sizing: none;
+  }
+
+  :global(:root[data-route-transition]) .wordmark {
     view-transition-name: cosmofi-wordmark;
   }
 </style>

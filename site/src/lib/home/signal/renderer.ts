@@ -1,21 +1,35 @@
-import type { Family } from 'cosmofi'
+import type { Family, Scheme } from 'cosmofi'
 
 import { rgbChannels, type RGBChannels } from '#lib/theme/color'
 
 import { getContext2d, type SignalViewport } from './canvas'
 import { createLighting } from './lighting'
 import { drawSamples } from './samples'
-import { createTextField } from './text-field'
+import { createTextField, type SignalAccents } from './text-field'
 import { createWaves } from './waves'
 
 export interface SignalState {
   readonly family: Family
   readonly paused: boolean
+  readonly scheme: Scheme
+  readonly accents: SignalAccents
+  readonly glow: string
 }
 
 export interface SignalRenderer {
   update(state: SignalState): void
   destroy(): void
+}
+
+function accentSignature(state: SignalState) {
+  return [
+    state.scheme,
+    state.glow,
+    state.accents.keyword,
+    state.accents.type,
+    state.accents.string,
+    state.accents.neutral,
+  ].join(':')
 }
 
 interface SignalRendererOptions {
@@ -30,12 +44,13 @@ export function createSignalRenderer(
   const context = getContext2d(canvas)
 
   const compact = window.matchMedia('(max-width: 600px)')
-  const text = createTextField(context)
+  const text = createTextField(context, initial.accents)
   const waves = createWaves(context)
   const lighting = createLighting(context)
 
   let family = initial.family
   let paused = initial.paused
+  let accentKey = accentSignature(initial)
   let target: RGBChannels = rgbChannels(family.foreground)
   let color: [number, number, number] = [...target]
   let viewport: SignalViewport = {
@@ -187,6 +202,19 @@ export function createSignalRenderer(
     draw()
   }
 
+  function settle() {
+    if (paused) {
+      color = [...target]
+      stop()
+      draw()
+      return
+    }
+
+    start()
+  }
+
+  lighting.configure(initial.scheme, initial.glow)
+
   // Prepare buffers before installing observers so failed initialization leaves no listeners.
   resize()
 
@@ -212,20 +240,24 @@ export function createSignalRenderer(
 
   return {
     update(state) {
-      if (family.id !== state.family.id) {
+      const nextAccentKey = accentSignature(state)
+
+      if (
+        family.id !== state.family.id ||
+        family.foreground !== state.family.foreground
+      ) {
         family = state.family
         target = rgbChannels(family.foreground)
       }
 
-      paused = state.paused
-
-      if (paused) {
-        color = [...target]
-        stop()
-        draw()
-      } else {
-        start()
+      if (accentKey !== nextAccentKey) {
+        accentKey = nextAccentKey
+        text.setAccents(state.accents)
+        lighting.configure(state.scheme, state.glow)
       }
+
+      paused = state.paused
+      settle()
     },
     destroy() {
       destroyed = true

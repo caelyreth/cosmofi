@@ -90,7 +90,7 @@
     justify-content: space-between;
     gap: 12px 24px;
     padding-bottom: 12px;
-    border-bottom: 1px solid #333333;
+    border-bottom: 1px solid var(--line);
   }
 
   .source-tabs {
@@ -191,7 +191,7 @@
     flex-wrap: wrap;
     gap: 12px;
     padding-top: 16px;
-    border-top: 1px solid #333333;
+    border-top: 1px solid var(--line);
     color: var(--secondary);
     font-size: var(--text-small);
   }

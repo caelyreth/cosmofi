@@ -1,14 +1,16 @@
 <script lang="ts">
-  import { familyById, type FamilyId } from 'cosmofi'
+  import type { FamilyId } from 'cosmofi'
 
   import { rovingFocus } from '#lib/attachments/roving-focus'
+  import { getThemeSelection } from '#lib/state/theme.svelte'
   import { colorHue } from '#lib/theme/color'
 
   import { omittedArc, point, segments } from './hue-wheel'
 
   let selected = $state<FamilyId>('halo')
 
-  const family = $derived(familyById[selected])
+  const appearance = getThemeSelection()
+  const family = $derived(appearance.theme.familyById[selected])
   const hue = $derived(colorHue(family.foreground))
   const marker = $derived(point(hue, 125))
 </script>
@@ -57,7 +59,7 @@
             cy="170"
             r="125"
             pathLength="360"
-            stroke={segment.foreground}
+            stroke={appearance.theme.familyById[segment.id].foreground}
             stroke-width="20"
             stroke-dasharray={`${segment.length} ${360 - segment.length}`}
             stroke-dashoffset={-segment.start}
@@ -177,7 +179,7 @@
   }
 
   .inner-guide {
-    stroke: #404040;
+    stroke: var(--guide);
     stroke-dasharray: 1 8;
   }
 
@@ -218,7 +220,7 @@
 
   .hue-foot {
     padding-top: 20px;
-    border-top: 1px solid #333333;
+    border-top: 1px solid var(--line);
   }
 
   .omission-key {

@@ -1,12 +1,8 @@
 <script lang="ts">
-  import {
-    families,
-    roles,
-    type Family,
-    type FamilyId,
-  } from 'cosmofi'
+  import { roles, type Family, type FamilyId } from 'cosmofi'
 
   import { rovingFocus } from '#lib/attachments/roving-focus'
+  import { getThemeSelection } from '#lib/state/theme.svelte'
   import { readableInk } from '#lib/theme/color'
 
   interface Props {
@@ -15,6 +11,8 @@
   }
 
   let { family, onselect }: Props = $props()
+
+  const appearance = getThemeSelection()
 </script>
 
 <div
@@ -23,7 +21,7 @@
   aria-label="Explore color families"
   {@attach rovingFocus}
 >
-  {#each families as item}
+  {#each appearance.theme.families as item (item.id)}
     <button
       type="button"
       class="band"

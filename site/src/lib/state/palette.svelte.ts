@@ -1,16 +1,18 @@
-import {
-  families,
-  familyById,
-  familyIndex,
-  type FamilyId,
-} from 'cosmofi'
+import { type FamilyId } from 'cosmofi'
 import { createContext } from 'svelte'
 
 import type { Direction } from '#lib/motion/direction'
 
+import type { ThemeSelection } from './theme.svelte'
+
 export class PaletteSelection {
+  #theme: ThemeSelection
   #id = $state<FamilyId>('halo')
   #direction = $state<Direction>(1)
+
+  constructor(theme: ThemeSelection) {
+    this.#theme = theme
+  }
 
   loopColors = $state(true)
 
@@ -27,11 +29,11 @@ export class PaletteSelection {
   }
 
   get family() {
-    return familyById[this.#id]
+    return this.#theme.theme.familyById[this.#id]
   }
 
   get channel() {
-    return familyIndex[this.#id]
+    return this.#theme.theme.familyIndex[this.#id]
   }
 
   set channel(index: number) {
@@ -39,7 +41,7 @@ export class PaletteSelection {
       return
     }
 
-    const family = families[index]
+    const family = this.#theme.theme.families[index]
 
     if (family) {
       this.select(family.id)
@@ -51,12 +53,15 @@ export class PaletteSelection {
       return
     }
 
-    this.#direction = direction ?? (familyIndex[id] > this.channel ? 1 : -1)
+    const index = this.#theme.theme.familyIndex
+
+    this.#direction = direction ?? (index[id] > this.channel ? 1 : -1)
     this.#id = id
   }
 
   advance = () => {
-    const next = families[(this.channel + 1) % families.length]
+    const list = this.#theme.theme.families
+    const next = list[(this.channel + 1) % list.length]
 
     this.select(next.id, 1)
   }
@@ -67,8 +72,8 @@ const [getPaletteSelection, setPaletteSelection] =
 
 export { getPaletteSelection }
 
-export function providePaletteSelection() {
-  const selection = new PaletteSelection()
+export function providePaletteSelection(theme: ThemeSelection) {
+  const selection = new PaletteSelection(theme)
 
   setPaletteSelection(selection)
 

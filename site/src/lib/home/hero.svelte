@@ -3,6 +3,7 @@
   import type { Family } from 'cosmofi'
 
   import Arrow from '#lib/components/arrow.svelte'
+  import { getThemeSelection } from '#lib/state/theme.svelte'
 
   import SignalField from './signal-field.svelte'
 
@@ -13,6 +14,8 @@
 
   let { family, paused }: Props = $props()
 
+  const appearance = getThemeSelection()
+
   const destinations = [
     { href: resolve('/introduction'), label: 'Introduction' },
     { href: resolve('/spectrum'), label: 'Spectrum' },
@@ -21,7 +24,7 @@
 
 <div class="hero-stage">
   <div class="hero-image" aria-hidden="true" data-nosnippet>
-    <SignalField {family} {paused} />
+    <SignalField {family} {paused} theme={appearance.theme} />
   </div>
   <div class="stage-grid" aria-hidden="true" data-nosnippet></div>
   <div class="hero-title frame">
@@ -98,6 +101,9 @@
     line-height: 0.88;
     font-weight: 600;
     text-wrap: nowrap;
+  }
+
+  :global(:root[data-route-transition]) h1 {
     view-transition-name: cosmofi-wordmark;
   }
 

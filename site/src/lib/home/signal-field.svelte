@@ -1,25 +1,58 @@
 <script lang="ts">
-  import type { Family } from 'cosmofi'
+  import type { Family, HexColor, Theme } from 'cosmofi'
   import { untrack } from 'svelte'
   import type { Attachment } from 'svelte/attachments'
 
-  import type { SignalRenderer } from './signal/renderer'
+  import { rgbChannels } from '#lib/theme/color'
+
+  import type { SignalRenderer, SignalState } from './signal/renderer'
+  import type { SignalAccents } from './signal/text-field'
 
   interface Props {
     family: Family
     paused?: boolean
+    theme: Theme
   }
 
-  let { family, paused = false }: Props = $props()
+  let { family, paused = false, theme }: Props = $props()
   let failed = $state(false)
   let ready = $state(false)
+
+  function signalState(
+    nextFamily: Family,
+    nextPaused: boolean,
+    nextTheme: Theme,
+  ): SignalState {
+    const accents: SignalAccents = {
+      keyword: channels(nextTheme.familyById.remnant.foreground),
+      type: channels(nextTheme.familyById.regolith.foreground),
+      string: channels(nextTheme.familyById.unripe.foreground),
+      neutral: channels(nextTheme.familyById.static.foreground),
+    }
+    const glowSource =
+      nextTheme.scheme === 'dark'
+        ? nextTheme.familyById.moonveil.emphasis
+        : nextTheme.surfaces.background
+
+    return {
+      family: nextFamily,
+      paused: nextPaused,
+      scheme: nextTheme.scheme,
+      glow: channels(glowSource),
+      accents,
+    }
+  }
+
+  function channels(color: HexColor) {
+    return rgbChannels(color).join(',')
+  }
 
   const attachRenderer: Attachment<HTMLCanvasElement> = (canvas) => {
     let renderer = $state.raw<SignalRenderer | undefined>(undefined)
     let disposed = false
 
     $effect(() => {
-      renderer?.update({ family, paused })
+      renderer?.update(signalState(family, paused, theme))
     })
 
     void import('./signal/renderer').then(
@@ -32,7 +65,7 @@
           renderer = untrack(() =>
             createSignalRenderer(
               canvas,
-              { family, paused },
+              signalState(family, paused, theme),
               {
                 onready: () => {
                   if (!disposed) {

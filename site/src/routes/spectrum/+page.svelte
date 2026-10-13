@@ -32,11 +32,13 @@
       </p>
     </div>
 
-    <SpectrumRegister
-      family={palette.family}
-      direction={palette.direction}
-      onselect={palette.select}
-    />
+    <div class="spectrum-register">
+      <SpectrumRegister
+        family={palette.family}
+        direction={palette.direction}
+        onselect={palette.select}
+      />
+    </div>
   </div>
 </main>
 
@@ -53,9 +55,14 @@
     flex-direction: column;
     justify-content: safe center;
     width: 100%;
+    margin-inline: auto;
+    padding-block: 4px;
+  }
+
+  .spectrum-register {
+    width: 100%;
     max-width: 1440px;
     margin-inline: auto;
-    padding: 4px 6px;
   }
 
   .section-heading {

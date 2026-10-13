@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { families } from 'cosmofi'
   import { Repeat2 } from 'lucide-svelte'
   import { cubicOut } from 'svelte/easing'
   import { prefersReducedMotion, Tween } from 'svelte/motion'
@@ -7,6 +6,7 @@
   import DirectionalText from '#lib/components/directional-text.svelte'
   import { autoCycle } from '#lib/motion/auto-cycle.svelte'
   import type { PaletteSelection } from '#lib/state/palette.svelte'
+  import { getThemeSelection } from '#lib/state/theme.svelte'
 
   import FamilySelector from './family-selector.svelte'
 
@@ -16,7 +16,9 @@
 
   let { palette }: Props = $props()
 
+  const appearance = getThemeSelection()
   const id = $props.id()
+  const lastChannel = $derived(appearance.theme.families.length - 1)
 
   const frequency = Tween.of(() => palette.channel, {
     duration: () => (prefersReducedMotion.current ? 0 : 550),
@@ -68,14 +70,14 @@
         {id}
         type="range"
         min="0"
-        max={families.length - 1}
+        max={lastChannel}
         step="1"
         bind:value={palette.channel}
         aria-valuetext={palette.family.name}
       />
       <span
         class="frequency-marker"
-        style:--position={frequency.current / (families.length - 1)}
+        style:--position={frequency.current / lastChannel}
         aria-hidden="true"
       ></span>
     </div>

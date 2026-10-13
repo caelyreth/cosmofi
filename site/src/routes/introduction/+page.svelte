@@ -1,6 +1,5 @@
 <script lang="ts">
   import { snapshot } from '$app/navigation'
-  import { syntaxColors } from 'cosmofi'
 
   import type { LanguageId } from '#lib/introduction/code'
   import CodeSpecimen from '#lib/introduction/code-specimen.svelte'
@@ -8,10 +7,14 @@
   import StoryChapter from '#lib/introduction/story-chapter.svelte'
   import SurfaceStudy from '#lib/introduction/surface-study.svelte'
   import { syntaxRoles } from '#lib/introduction/syntax'
+  import { getThemeSelection } from '#lib/state/theme.svelte'
 
   import type { PageProps } from './$types'
 
   let { data }: PageProps = $props()
+
+  const appearance = getThemeSelection()
+  const syntaxColors = $derived(appearance.theme.syntaxColors)
   let scroller = $state<HTMLElement>()
   let restoredScroll = $state<number>()
   let language = $state<LanguageId>('ts')
@@ -192,7 +195,7 @@
     display: grid;
     gap: 24px;
     padding-top: 24px;
-    border-top: 1px solid #333333;
+    border-top: 1px solid var(--line);
   }
 
   .principles dt {
@@ -209,7 +212,7 @@
   }
 
   .syntax-legend {
-    border-top: 1px solid #333333;
+    border-top: 1px solid var(--line);
   }
 
   .syntax-legend > div {
@@ -220,7 +223,7 @@
     gap: 12px 20px;
     min-height: 40px;
     padding-block: 8px;
-    border-bottom: 1px solid #292929;
+    border-bottom: 1px solid var(--line);
     font-size: var(--text-small);
   }
 

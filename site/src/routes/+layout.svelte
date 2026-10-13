@@ -1,25 +1,32 @@
 <script lang="ts">
-  import '../app.css'
-  import { base } from 'cosmofi'
+  import { untrack } from 'svelte'
 
+  import '../app.css'
   import favicon from '#lib/assets/favicon.svg'
   import SiteHeader from '#lib/components/site-header.svelte'
   import { registerRouteTransitions } from '#lib/navigation/transitions'
   import { paletteKeyboard } from '#lib/state/palette-keyboard'
   import { providePaletteSelection } from '#lib/state/palette.svelte'
+  import { provideTheme } from '#lib/state/theme.svelte'
   import { siteStyle } from '#lib/theme/site-style'
 
   import type { LayoutProps } from './$types'
 
-  let { children }: LayoutProps = $props()
+  let { children, data }: LayoutProps = $props()
 
-  const palette = providePaletteSelection()
+  const appearance = provideTheme(untrack(() => data.theme))
+  const palette = providePaletteSelection(appearance)
   const tune = paletteKeyboard(palette)
+  const style = $derived(siteStyle(appearance.theme))
 
   registerRouteTransitions()
 </script>
 
 <svelte:window onkeydown={tune} />
+<svelte:body
+  style:background-color={appearance.theme.surfaces.background}
+  style:color-scheme={appearance.scheme}
+/>
 
 <svelte:head>
   <link rel="icon" href={favicon} />
@@ -30,13 +37,21 @@
     type="font/woff2"
     crossorigin="anonymous"
   />
-  <meta name="theme-color" content={base.background} />
+  <link
+    rel="preload"
+    href="/fonts/manrope.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous"
+  />
+  <meta name="theme-color" content={appearance.theme.surfaces.background} />
 </svelte:head>
 
 <div
   class="site"
-  style={siteStyle}
+  {style}
   style:--channel={palette.family.foreground}
+  data-theme={appearance.id}
 >
   <a class="skip-link" href="#main">Skip to content</a>
   <SiteHeader />

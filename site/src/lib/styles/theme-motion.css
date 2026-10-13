@@ -1,0 +1,255 @@
+@property --page {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #161616;
+}
+@property --panel {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #1a1a1a;
+}
+@property --raised {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #242424;
+}
+@property --ink {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #c1bfb3;
+}
+@property --secondary {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #92918b;
+}
+@property --muted {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #77766d;
+}
+@property --line {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #333333;
+}
+@property --guide {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #404040;
+}
+@property --track {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #545450;
+}
+@property --channel {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #a19ec2;
+}
+@property --syntax-punctuation {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #77766d;
+}
+@property --syntax-variable {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #c1bfb3;
+}
+@property --syntax-keyword {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #dc8789;
+}
+@property --syntax-function {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #a19ec2;
+}
+@property --syntax-string {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #a0a77b;
+}
+@property --syntax-constant {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #539579;
+}
+@property --syntax-type {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #bd9976;
+}
+@property --syntax-number {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #bd9976;
+}
+@property --syntax-comment {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #92918b;
+}
+@property --static-surface {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #272725;
+}
+@property --static-muted {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #545450;
+}
+@property --static-foreground {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #92918b;
+}
+@property --static-emphasis {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #aaa9a2;
+}
+@property --halo-surface {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #292831;
+}
+@property --halo-muted {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #58566f;
+}
+@property --halo-foreground {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #a19ec2;
+}
+@property --halo-emphasis {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #8a83b0;
+}
+@property --afterglow-surface {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #352426;
+}
+@property --afterglow-muted {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #955b5d;
+}
+@property --afterglow-foreground {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #dc8789;
+}
+@property --afterglow-emphasis {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #ce7076;
+}
+@property --remnant-surface {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #382731;
+}
+@property --remnant-muted {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #855b70;
+}
+@property --remnant-foreground {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #c88da5;
+}
+@property --remnant-emphasis {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #bc728f;
+}
+@property --unripe-surface {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #292b23;
+}
+@property --unripe-muted {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #5b6148;
+}
+@property --unripe-foreground {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #a0a77b;
+}
+@property --unripe-emphasis {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #8b965c;
+}
+@property --life-surface {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #252e29;
+}
+@property --life-muted {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #4b6a5a;
+}
+@property --life-foreground {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #7dad96;
+}
+@property --life-emphasis {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #539579;
+}
+@property --regolith-surface {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #302922;
+}
+@property --regolith-muted {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #735940;
+}
+@property --regolith-foreground {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #bd9976;
+}
+@property --regolith-emphasis {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #b78658;
+}
+@property --moonveil-surface {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #2e2d29;
+}
+@property --moonveil-muted {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #77766d;
+}
+@property --moonveil-foreground {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #c1bfb3;
+}
+@property --moonveil-emphasis {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #d9d7cd;
+}

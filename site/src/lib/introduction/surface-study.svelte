@@ -2,11 +2,19 @@
   import { rovingFocus } from '#lib/attachments/roving-focus'
   import DirectionalText from '#lib/components/directional-text.svelte'
   import { autoCycle } from '#lib/motion/auto-cycle.svelte'
+  import { getThemeSelection } from '#lib/state/theme.svelte'
 
-  import { planeSeparation, surfaces } from './surfaces'
+  import { planeSeparation, surfaceReadings } from './surfaces'
 
   let selected = $state(0)
 
+  const appearance = getThemeSelection()
+  const surfaces = $derived(
+    surfaceReadings.map((item) => ({
+      ...item,
+      color: appearance.theme.surfaces[item.key],
+    })),
+  )
   const surface = $derived(surfaces[selected])
   const channel = $derived(parseInt(surface.color.slice(1, 3), 16))
   const cycle = autoCycle({
@@ -126,7 +134,7 @@
 
   .composition-axis {
     position: absolute;
-    background: #333333;
+    background: var(--line);
   }
 
   .horizontal {
@@ -149,7 +157,7 @@
     display: flex;
     align-items: flex-end;
     padding: 12px;
-    border: 1px solid #404040;
+    border: 1px solid var(--guide);
     color: var(--secondary);
     transform: translate(
       calc(var(--plane) * var(--separation)),
@@ -209,7 +217,7 @@
 
   .channel-track {
     height: 2px;
-    background: #333333;
+    background: var(--line);
   }
 
   .channel-track i {
@@ -237,7 +245,7 @@
     gap: 10px;
     min-height: 52px;
     padding-block: 8px;
-    border-bottom: 1px solid #404040;
+    border-bottom: 1px solid var(--guide);
     color: var(--secondary);
     font-size: var(--text-small);
     line-height: 1.5;
@@ -255,7 +263,7 @@
     width: 16px;
     height: 16px;
     flex-shrink: 0;
-    border: 1px solid #545454;
+    border: 1px solid var(--track);
   }
 
   @media (max-width: 700px) {
