@@ -4,10 +4,6 @@ node_modules
 # dev
 .svelte-kit
 build
-/.impeccable/review
-
-# local architecture notes
-/references/*.md
 
 # os
 .DS_Store
