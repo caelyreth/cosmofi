@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Family, FamilyId } from 'cosmofi-starfield'
+  import type { Family, FamilyId } from 'cosmofi'
 
   import type { Direction } from '#lib/motion/direction'
 

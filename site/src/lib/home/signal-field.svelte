@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Family } from 'cosmofi-starfield'
+  import type { Family } from 'cosmofi'
   import { untrack } from 'svelte'
   import type { Attachment } from 'svelte/attachments'
 

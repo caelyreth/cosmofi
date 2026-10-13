@@ -1,4 +1,4 @@
-import { surfaces, syntaxColors } from 'cosmofi-starfield'
+import { surfaces, syntaxColors } from 'cosmofi'
 import type { ShjTheme } from 'rangi/core'
 
 export const cosmofiSyntaxTheme = {

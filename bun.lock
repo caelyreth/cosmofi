@@ -11,14 +11,14 @@
         "typescript": "npm:typescript-native-bridge@6.0.3-bridge.18.tsgo.7.0.2",
       },
     },
-    "packages/starfield": {
-      "name": "cosmofi-starfield",
+    "packages/cosmofi": {
+      "name": "cosmofi",
       "version": "0.0.0",
     },
     "site": {
       "name": "site",
       "dependencies": {
-        "cosmofi-starfield": "workspace:*",
+        "cosmofi": "workspace:*",
         "culori": "^4.0.2",
         "lucide-svelte": "^1.0.1",
         "rangi": "^2.2.0",
@@ -215,7 +215,7 @@
 
     "cookie": ["cookie@2.0.1", "", {}, "sha512-yuToqVvRrj6pfDXREyQAAv8SkAEk/8GS3jQRTiUMm66TVtBYmqQeoEjL2Lmq8Rpo6271vH76InTChTitEAm65w=="],
 
-    "cosmofi-starfield": ["cosmofi-starfield@workspace:packages/starfield"],
+    "cosmofi": ["cosmofi@workspace:packages/cosmofi"],
 
     "culori": ["culori@4.0.2", "", {}, "sha512-1+BhOB8ahCn4O0cep0Sh2l9KCOfOdY+BXJnKMHFFzDEouSr/el18QwXEMRlOj9UY5nCeA8UN3a/82rUWRBeyBw=="],
 

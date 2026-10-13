@@ -1,6 +1,6 @@
 <script lang="ts">
   import { resolve } from '$app/paths'
-  import type { Family } from 'cosmofi-starfield'
+  import type { Family } from 'cosmofi'
 
   import Arrow from '#lib/components/arrow.svelte'
 

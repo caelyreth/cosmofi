@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Family } from 'cosmofi-starfield'
+  import type { Family } from 'cosmofi'
 
   import DirectionalText from '#lib/components/directional-text.svelte'
   import type { Direction } from '#lib/motion/direction'

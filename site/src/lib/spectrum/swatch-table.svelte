@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { roles, type Family } from 'cosmofi-starfield'
+  import { roles, type Family } from 'cosmofi'
 
   import { overflowFocus } from '#lib/attachments/overflow-focus'
   import ColorCopy from '#lib/components/color-copy.svelte'

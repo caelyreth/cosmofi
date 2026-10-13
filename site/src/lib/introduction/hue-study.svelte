@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { familyById, type FamilyId } from 'cosmofi-starfield'
+  import { familyById, type FamilyId } from 'cosmofi'
 
   import { rovingFocus } from '#lib/attachments/roving-focus'
   import { colorHue } from '#lib/theme/color'

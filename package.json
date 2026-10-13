@@ -1,5 +1,5 @@
 {
-  "name": "cosmofi",
+  "name": "cosmofi-workspace",
   "private": true,
   "workspaces": [
     "site",

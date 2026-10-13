@@ -1,4 +1,4 @@
-import type { syntaxColors } from 'cosmofi-starfield'
+import type { syntaxColors } from 'cosmofi'
 
 export const syntaxRoles = [
   { id: 'punctuation', label: 'Punctuation', family: 'Muted' },

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { snapshot } from '$app/navigation'
-  import { syntaxColors } from 'cosmofi-starfield'
+  import { syntaxColors } from 'cosmofi'
 
   import type { LanguageId } from '#lib/introduction/code'
   import CodeSpecimen from '#lib/introduction/code-specimen.svelte'

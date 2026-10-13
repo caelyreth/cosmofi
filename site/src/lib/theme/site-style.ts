@@ -1,4 +1,4 @@
-import { base, families, roles, surfaces } from 'cosmofi-starfield'
+import { base, families, roles, surfaces } from 'cosmofi'
 
 const familyVariables = families.flatMap((family) =>
   roles.map((role) => `--${family.id}-${role}:${family[role]}`),

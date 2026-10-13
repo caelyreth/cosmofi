@@ -1,6 +1,6 @@
 <script lang="ts">
   import '../app.css'
-  import { base } from 'cosmofi-starfield'
+  import { base } from 'cosmofi'
 
   import favicon from '#lib/assets/favicon.svg'
   import SiteHeader from '#lib/components/site-header.svelte'

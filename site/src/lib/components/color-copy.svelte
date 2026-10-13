@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { HexColor } from 'cosmofi-starfield'
+  import type { HexColor } from 'cosmofi'
 
   import { colorRepresentation, type ColorFormat } from '#lib/theme/color'
 

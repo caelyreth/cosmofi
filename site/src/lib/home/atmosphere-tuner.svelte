@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { families } from 'cosmofi-starfield'
+  import { families } from 'cosmofi'
   import { Repeat2 } from 'lucide-svelte'
   import { cubicOut } from 'svelte/easing'
   import { prefersReducedMotion, Tween } from 'svelte/motion'

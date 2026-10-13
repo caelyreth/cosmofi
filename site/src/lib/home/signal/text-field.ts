@@ -1,4 +1,4 @@
-import { familyById } from 'cosmofi-starfield'
+import { familyById } from 'cosmofi'
 
 import { rgbChannels } from '#lib/theme/color'
 

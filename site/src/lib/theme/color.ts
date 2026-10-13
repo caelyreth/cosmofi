@@ -1,4 +1,4 @@
-import { base, familyById, type HexColor } from 'cosmofi-starfield'
+import { base, familyById, type HexColor } from 'cosmofi'
 import {
   formatHex,
   formatRgb,

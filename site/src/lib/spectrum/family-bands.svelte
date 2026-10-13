@@ -4,7 +4,7 @@
     roles,
     type Family,
     type FamilyId,
-  } from 'cosmofi-starfield'
+  } from 'cosmofi'
 
   import { rovingFocus } from '#lib/attachments/roving-focus'
   import { readableInk } from '#lib/theme/color'

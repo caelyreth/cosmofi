@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { families, type FamilyId } from 'cosmofi-starfield'
+  import { families, type FamilyId } from 'cosmofi'
 
   import { rovingFocus } from '#lib/attachments/roving-focus'
 

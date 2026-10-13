@@ -1,4 +1,4 @@
-import { surfaces as paletteSurfaces } from 'cosmofi-starfield'
+import { surfaces as paletteSurfaces } from 'cosmofi'
 
 export const surfaces = [
   {

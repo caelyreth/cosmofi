@@ -3,7 +3,7 @@ import {
   familyById,
   familyIndex,
   type FamilyId,
-} from 'cosmofi-starfield'
+} from 'cosmofi'
 import { createContext } from 'svelte'
 
 import type { Direction } from '#lib/motion/direction'

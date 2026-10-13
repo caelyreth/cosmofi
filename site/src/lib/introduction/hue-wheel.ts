@@ -1,4 +1,4 @@
-import { families } from 'cosmofi-starfield'
+import { families } from 'cosmofi'
 
 import { colorHue } from '#lib/theme/color'
 

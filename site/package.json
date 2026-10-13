@@ -14,7 +14,7 @@
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
   },
   "dependencies": {
-    "cosmofi-starfield": "workspace:*",
+    "cosmofi": "workspace:*",
     "culori": "^4.0.2",
     "lucide-svelte": "^1.0.1",
     "rangi": "^2.2.0"

@@ -1,4 +1,4 @@
-import type { Family } from 'cosmofi-starfield'
+import type { Family } from 'cosmofi'
 
 import type { SignalViewport } from './canvas'
 

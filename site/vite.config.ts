@@ -20,6 +20,6 @@ export default defineConfig({
     },
   },
   ssr: {
-    noExternal: ['cosmofi-starfield'],
+    noExternal: ['cosmofi'],
   },
 })
