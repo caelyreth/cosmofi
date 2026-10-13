@@ -62,7 +62,8 @@
 }
 
 :root::view-transition-group(cosmofi-theme) {
-  animation: none;
+  animation-duration: 380ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 :root::view-transition-image-pair(cosmofi-theme) {
