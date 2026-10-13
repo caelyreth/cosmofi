@@ -168,6 +168,12 @@
     background: var(--page);
   }
 
+  @media (min-width: 701px) {
+    .introduction {
+      background: var(--panel);
+    }
+  }
+
   .chapter-number {
     color: var(--secondary);
   }

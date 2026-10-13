@@ -108,7 +108,8 @@ select:focus-visible,
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--track, #545450) transparent;
+  scrollbar-color: color-mix(in srgb, var(--track, #545450) 72%, transparent)
+    transparent;
 }
 
 input {
@@ -146,7 +147,6 @@ a svg {
 
 .site {
   --edge-inset: 24px;
-  scrollbar-gutter: stable;
   --header-top: max(var(--edge-inset), env(safe-area-inset-top));
   --header-bottom: calc(var(--header-top) + 44px);
   --content-top: calc(var(--header-bottom) + var(--edge-inset));
@@ -194,7 +194,17 @@ a svg {
   min-width: 0;
   min-height: 0;
   overflow: auto;
+  overflow: overlay;
   overscroll-behavior: contain;
+  scrollbar-gutter: auto;
+  scrollbar-color: color-mix(in srgb, var(--track, #545450) 72%, transparent)
+    transparent;
+}
+
+.scroll-pane::-webkit-scrollbar,
+.scroll-pane::-webkit-scrollbar-track,
+.scroll-pane::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 .frame {

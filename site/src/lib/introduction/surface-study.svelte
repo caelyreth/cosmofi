@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { prefersReducedMotion } from 'svelte/motion'
+  import { fade } from 'svelte/transition'
+
   import { rovingFocus } from '#lib/attachments/roving-focus'
   import DirectionalText from '#lib/components/directional-text.svelte'
   import { autoCycle } from '#lib/motion/auto-cycle.svelte'
@@ -6,9 +9,9 @@
 
   import { planeSeparation, surfaceReadings } from './surfaces'
 
-  let selected = $state(0)
-
   const appearance = getThemeSelection()
+
+  let selected = $state(0)
   const surfaces = $derived(
     surfaceReadings.map((item) => ({
       ...item,
@@ -17,6 +20,11 @@
   )
   const surface = $derived(surfaces[selected])
   const channel = $derived(parseInt(surface.color.slice(1, 3), 16))
+  const fadeOut = $derived(prefersReducedMotion.current ? 0 : 200)
+  const fadeIn = $derived({
+    duration: prefersReducedMotion.current ? 0 : 220,
+    delay: prefersReducedMotion.current ? 0 : 280,
+  })
   const cycle = autoCycle({
     interval: 4500,
     value: () => selected,
@@ -39,18 +47,26 @@
       aria-hidden="true"
       data-nosnippet
     >
-      <span class="composition-axis horizontal"></span>
-      <span class="composition-axis vertical"></span>
-      {#each surfaces as item, index}
+      {#key appearance.id}
         <div
-          class="neutral-plane"
-          class:chosen={selected === index}
-          style:--plane={index - 1}
-          style:background={item.color}
+          class="planes"
+          out:fade={{ duration: fadeOut }}
+          in:fade={fadeIn}
         >
-          <span class="instrument-label">0{index + 1}</span>
+          <span class="composition-axis horizontal"></span>
+          <span class="composition-axis vertical"></span>
+          {#each surfaces as item, index}
+            <div
+              class="neutral-plane"
+              class:chosen={selected === index}
+              style:--plane={index - 1}
+              style:background={item.color}
+            >
+              <span class="instrument-label">0{index + 1}</span>
+            </div>
+          {/each}
         </div>
-      {/each}
+      {/key}
     </div>
 
     <div class="surface-reading">
@@ -130,6 +146,11 @@
     max-width: 340px;
     aspect-ratio: 1;
     justify-self: center;
+  }
+
+  .planes {
+    position: absolute;
+    inset: 0;
   }
 
   .composition-axis {

@@ -56,11 +56,30 @@
 }
 
 :root::view-transition-old(cosmofi-icon),
-:root::view-transition-new(cosmofi-icon),
-:root::view-transition-old(cosmofi-theme),
+:root::view-transition-new(cosmofi-icon) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+:root::view-transition-group(cosmofi-theme) {
+  animation: none;
+}
+
+:root::view-transition-image-pair(cosmofi-theme) {
+  isolation: auto;
+}
+
+:root::view-transition-old(cosmofi-theme) {
+  display: none;
+  animation: none;
+  mix-blend-mode: normal;
+  opacity: 0;
+}
+
 :root::view-transition-new(cosmofi-theme) {
   animation: none;
   mix-blend-mode: normal;
+  opacity: 1;
 }
 
 :root::view-transition-old(cosmofi-wordmark),
